@@ -18,24 +18,19 @@
 , "content_scripts":
 	[
 		{ "matches":
-			[ "http://*.torrentz.eu/*"
-			, "https://*.torrentz.eu/*"
-			, "http://*.torrentz.com/*"
-			, "https://*.torrentz.com/*"
-			, "http://*.torrentz.me/*"
-			, "https://*.torrentz.me/*"
+			[ "*://*.torrentz.eu/*"
+			, "*://*.torrentz.com/*"
+			, "*://*.torrentz.me/*"
 			]
 		, "js"     : ["handlers/torrentz.js"]
 		}
 	]
 , "permissions"    :
 	[ "tabs"
-	, "http://*.torrentz.eu"
-	, "https://*.torrentz.eu"
-	, "http://*.torrentz.com"
-	, "https://*.torrentz.com"
-	, "http://*.torrentz.me"
-	, "https://*.torrentz.me"
+	, "*://*.torrentz.eu"
+	, "*://*.torrentz.com"
+	, "*://*.torrentz.me"
+	, "*://*.torrage.com"
 	]
 , "options_page"   : "options.html"
 , "background_page": "background.html"
