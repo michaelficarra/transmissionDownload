@@ -1,80 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="blueprint.css">
-	<style type="text/css">
-		.container {
-			width: 600px;
-			margin: 1em 2em;
-		}
-		fieldset {
-			border: 0;
-			border-left: 1px solid #999;
-			padding-top: 3em;
-		}
-		fieldset.disabled {
-			background-color: #EEE;
-			color: #999;
-		}
-		fieldset.disabled * { cursor: default; }
-		fieldset.disabled legend:hover label { cursor: pointer; }
-		fieldset.disabled legend:hover { color: #555; }
-		fieldset p {
-			margin: 0 0 0.5em;
-			clear: both;
-			position: relative;
-		}
-		fieldset label { cursor: pointer; }
-		fieldset p label {
-			text-transform: lowercase;
-			float: left;
-			width: 8em;
-			margin-right: 0.7em;
-			text-align: right;
-			padding-top: 5px;
-			vertical-align: top;
-		}
-		fieldset p input[disabled] {
-			background-color: #eee;
-		}
-		fieldset p input[type="radio"]+label,
-		fieldset p input[type="checkbox"]+label {
-			text-align: left;
-			float: none;
-			margin-left: 0.5em;
-		}
-		fieldset legend {
-			font-variant: small-caps;
-			text-transform: capitalize;
-			position: relative;
-			top: 1em;
-			font-size: 1.5em;
-			cursor: default;
-		}
-		button#reset {
-			float: right;
-		}
-		label acronym {
-			text-transform: uppercase;
-			vertical-align: top;
-		}
-		img#logo {
-			float: left;
-			margin-right: 1.2em;
-			margin-left: 0.5em;
-		}
-		.title {
-			padding: 0.5em;
-			vertical-align: baseline;
-		}
-		label[for="additional_trackers"] { width: auto; }
-		#additional_trackers {
-			width: 100%;
-			height: 12em;
-			clear: left;
-		}
-	</style>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="blueprint.css" />
+	<link rel="stylesheet" type="text/css" href="options.css" />
+	<script type="text/javascript" src="AES.js"></script>
+	<script type="text/javascript" src="Base64.js"></script>
 </head>
 <body class="container">
 
@@ -84,16 +15,26 @@
 	<fieldset>
 		<legend>server configuration</legend>
 		<p>
-			<label for="server">host / ip:</label>
-			<input type="text" id="server" value="localhost" />
+			<label for="protocol">protocol:</label>
+			<select id="protocol">
+				<option value="https">https</option>
+				<option value="http">http</option>
+			</select>
+		</p>
+		<p>
+			<label for="host">host / ip:</label>
+			<input type="text" id="host" />
 		</p>
 		<p>
 			<label for="port">port:</label>
-			<input type="text" id="port" value="9091" size="5" />
+			<input type="text" id="port" size="5" />
 		</p>
 		<p>
-			<label for="rpc_path">rpc path:</label>
-			http://<span id="server_output">localhost</span>:<span id="port_output">9091</span>/<input type="text" id="rpc_path" value="transmission/rpc" />
+			<label for="path">rpc path:</label>
+			<input type="text" id="path" />
+		</p>
+		<p>
+			<span id="full_rpc_url"><span id="protocol_output">https</span>://<span id="server_output">localhost</span>:<span id="port_output">9091</span>/<span id="path_output">transmission/rpc</span></span>
 		</p>
 	</fieldset>
 
@@ -104,18 +45,18 @@
 		</legend>
 		<p>
 			<label for="username">username:</label>
-			<input type="text" id="username" value="" disabled="disabled" />
+			<input type="text" id="username" value="" />
 		</p>
 		<p>
 			<label for="password">password:</label>
-			<input type="password" id="password" value="" disabled="disabled" />
+			<input type="password" id="password" value="" />
 		</p>
 		<p>
-			<input type="checkbox" id="encryption_enabled" disabled="disabled" />
+			<input type="checkbox" id="encryption_enabled" />
 			<label for="encryption_enabled">encrypt with <acronym title="Advanced Encryption Standard (Rijndael)">AES</acronym></label>
 		</p>
 		<p>
-			<label for="encryption_key">encryption key</label>
+			<label for="encryption_key">encryption key:</label>
 			<input type="password" id="encryption_key" disabled="disabled" value="" />
 		</p>
 	</fieldset>
