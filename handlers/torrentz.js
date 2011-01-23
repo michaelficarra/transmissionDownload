@@ -6,7 +6,8 @@
 	};
 	console.log('content_script loaded');
 	chrome.extension.onRequest.addListener(function(req,sender,respond){
-		console.log('responding to a request');
+		if(req.reqtype != 'info_hash') return;
+		console.log('responding to a request',arguments);
 		respond(getInfoHash());
 	});
 })()

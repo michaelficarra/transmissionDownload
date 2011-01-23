@@ -19,7 +19,11 @@
 	[
 		{ "matches":
 			[ "http://*.torrentz.eu/*"
+			, "https://*.torrentz.eu/*"
 			, "http://*.torrentz.com/*"
+			, "https://*.torrentz.com/*"
+			, "http://*.torrentz.me/*"
+			, "https://*.torrentz.me/*"
 			]
 		, "js"     : ["handlers/torrentz.js"]
 		}
@@ -27,7 +31,11 @@
 , "permissions"    :
 	[ "tabs"
 	, "http://*.torrentz.eu"
+	, "https://*.torrentz.eu"
 	, "http://*.torrentz.com"
+	, "https://*.torrentz.com"
+	, "http://*.torrentz.me"
+	, "https://*.torrentz.me"
 	]
 , "options_page"   : "options.html"
 , "background_page": "background.html"

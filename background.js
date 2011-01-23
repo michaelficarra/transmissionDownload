@@ -6,7 +6,7 @@
 	}
 
 	var supportedUrls = [
-		/^https?:\/\/([^\/]*\.)?torrentz\.(com|eu)\/(announce_)?[a-f0-9]{40}/i
+		/^https?:\/\/([^\/]*\.)?torrentz\.(com|eu|me)\/(announce_)?[a-f0-9]{40}/i
 	]
 	var isSupportedUrl = function(url){
 		var i, l;
@@ -44,7 +44,7 @@
 	var clicked = function(){
 		log('clicked');
 		if(currentTab < 0) return;
-		chrome.tabs.sendRequest(currentTab, {}, function(info_hash){
+		chrome.tabs.sendRequest(currentTab, {reqtype:'info_hash'}, function(info_hash){
 			log('retrieved info_hash',info_hash);
 		});
 	};
