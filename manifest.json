@@ -27,10 +27,14 @@
 	]
 , "permissions"    :
 	[ "tabs"
-	, "*://*.torrentz.eu"
-	, "*://*.torrentz.com"
-	, "*://*.torrentz.me"
-	, "*://*.torrage.com"
+	, "*://*.torrentz.eu/*"
+	, "*://*.torrentz.com/*"
+	, "*://*.torrentz.me/*"
+	, "*://*.bitsnoop.com/*"
+	, "*://*.torrage.com/*"
+	, "*://*.torrage.ws/*"
+	, "*://*.torcache.com/*"
+	, "*://*.zoink.it/*"
 	]
 , "options_page"   : "options.html"
 , "background_page": "background.html"
