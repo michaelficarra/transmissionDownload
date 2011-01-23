@@ -4,7 +4,7 @@
 , "version"        : "0.0.1"
 , "description"    : "Adds torrent to Transmission through RPC on supported websites"
 , "icons"          :
-	{ "16" : "icons/transmission.16.png"
+	{ "16" : "icons/transmission.16.alt.png"
 	, "32" : "icons/transmission.32.png"
 	, "48" : "icons/transmission.48.png"
 	, "64" : "icons/transmission.64.png"
@@ -12,7 +12,7 @@
 	, "256": "icons/transmission.256.png"
 	}
 , "page_action":
-	{ "default_icon" : "icons/transmission.16.png"
+	{ "default_icon" : "icons/transmission.16.alt.png"
 	, "default_title": "Add this torrent to Transmission"
 	}
 , "content_scripts":
@@ -23,6 +23,10 @@
 			, "*://*.torrentz.me/*"
 			]
 		, "js"     : ["handlers/torrentz.js"]
+		}
+	,
+		{ "matches": [ "*://*/*" ]
+		, "js"     : ["handlers/generic.js"]
 		}
 	]
 , "permissions"    :

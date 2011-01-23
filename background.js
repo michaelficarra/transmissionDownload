@@ -5,12 +5,13 @@
 		console.log.apply(console,['transmissionDownload','--'].concat(args));
 	}
 
-	var supportedUrls = [
-		/^https?:\/\/([^\/]*\.)?torrentz\.(com|eu|me)\/(announce_)?[a-f0-9]{40}/i
+	var supportedUrls =
+	[ /^https?:\/\/([^\/]*\.)?torrentz\.(com|eu|me)\/(announce_)?[a-f0-9]{40}/i
+	//, /^http:\/\/([^\/]*\.)?bitsnoop.com\/.*\-q[0-9]+\.html$/
+	//, /^http:\/\/([^\/]*\.)?kickasstorrents.com\/.*\-t[0-9]+\.html$/
 	]
 	var isSupportedUrl = function(url){
-		var i, l;
-		for(i=0,l=supportedUrls.length; i<l; ++i) {
+		for(var i=0,l=supportedUrls.length; i<l; ++i) {
 			if(supportedUrls[i](url)) return true;
 		}
 		return false;
@@ -18,6 +19,9 @@
 
 	var refreshIcon = function(tab){
 		chrome.pageAction[isSupportedUrl(tab.url) ? 'show' : 'hide'](tab.id);
+		chrome.tabs.sendRequest(tab.id, {type:'hasMagnet'}, function(response){
+			if(response) chrome.pageAction.show(tab.id);
+		});
 	}
 	// show icon as page action on tab change
 	chrome.tabs.onSelectionChanged.addListener(function(tabId) {
@@ -31,7 +35,6 @@
 	// show icon as page action on page load
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		currentTab = tabId;
-		chrome.tabs.sendRequest(tabId, {reqtype: "clickhide-deactivate"})
 		if(changeInfo.status == "complete") refreshIcon(tab);
 	});
 	// show icon as page action
@@ -46,7 +49,8 @@
 		info_hash = info_hash.toLowerCase();
 		var trackers = [], running = 0,
 			finish = function(){
-				if(--running < 1) callback(trackers);
+				if(--running < 1 && typeof callback == 'function')
+					callback(trackers);
 			};
 
 		var xhrTorrentz = new XMLHttpRequest(),
@@ -68,8 +72,7 @@
 				if(!text) tryTorrentz();
 				var list = text.match(/(.{0,3}ps?:\/\/.+\/announce)/gi);
 				if(list.length < 1) tryTorrentz();
-				var i=0, l=list.length;
-				for(; i<l; ++i)
+				for(var i=0,l=list.length; i<l; ++i)
 					if(0 > trackers.indexOf(list[i]))
 						trackers.push(list[i]);
 				finish();
@@ -87,8 +90,7 @@
 			if(!text || text == "NOTFOUND" || text == "ERROR") return finish();
 			var json = JSON.parse(text);
 			if(!json || typeof json.length != "number" || json.length < 1) return finish();
-			var i=0, l=json.length;
-			for(; i<l; ++i)
+			for(var i=0,l=json.length; i<l; ++i)
 				if(0 > trackers.indexOf(json[i]["ANNOUNCE"]))
 					trackers.push(json[i]["ANNOUNCE"]);
 			return finish();
@@ -105,8 +107,9 @@
 	chrome.pageAction.onClicked.addListener(function(){
 		log('clicked');
 		if(currentTab < 0) return;
-		chrome.tabs.sendRequest(currentTab, {reqtype:'info_hash'}, function(info_hash){
+		chrome.tabs.sendRequest(currentTab, {type:'info_hash'}, function(info_hash){
 			log('determined info_hash',info_hash);
+			if(!info_hash) return;
 			getTrackers(info_hash,function(trackers){
 				log('retrieved trackers',trackers);
 			});
