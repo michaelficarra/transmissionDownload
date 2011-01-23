@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="blueprint.css">
+	<style type="text/css">
+		.container {
+			width: 600px;
+			margin: 1em 2em;
+		}
+		fieldset {
+			border: 0;
+			border-left: 1px solid #999;
+			padding-top: 3em;
+		}
+		fieldset.disabled {
+			background-color: #EEE;
+			color: #999;
+		}
+		fieldset.disabled * { cursor: default; }
+		fieldset.disabled legend:hover label { cursor: pointer; }
+		fieldset.disabled legend:hover { color: #555; }
+		fieldset p {
+			margin: 0 0 0.5em;
+			clear: both;
+			position: relative;
+		}
+		fieldset label { cursor: pointer; }
+		fieldset p label {
+			text-transform: lowercase;
+			float: left;
+			width: 8em;
+			margin-right: 0.7em;
+			text-align: right;
+			padding-top: 5px;
+			vertical-align: top;
+		}
+		fieldset p input[disabled] {
+			background-color: #eee;
+		}
+		fieldset p input[type="radio"]+label,
+		fieldset p input[type="checkbox"]+label {
+			text-align: left;
+			float: none;
+			margin-left: 0.5em;
+		}
+		fieldset legend {
+			font-variant: small-caps;
+			text-transform: capitalize;
+			position: relative;
+			top: 1em;
+			font-size: 1.5em;
+			cursor: default;
+		}
+		button#reset {
+			float: right;
+		}
+		label acronym {
+			text-transform: uppercase;
+			vertical-align: top;
+		}
+		img#logo {
+			float: left;
+			margin-right: 1.2em;
+			margin-left: 0.5em;
+		}
+		.title {
+			padding: 0.5em;
+			vertical-align: baseline;
+		}
+	</style>
+</head>
+<body class="container">
+
+	<img src="icons/transmission.48.png" id="logo" />
+	<h2 class="title">Transmission Torrent Downloader</h2>
+
+	<fieldset>
+		<legend>server configuration</legend>
+		<p>
+			<label for="server">host / ip:</label>
+			<input type="text" id="server" value="localhost" />
+		</p>
+		<p>
+			<label for="port">port:</label>
+			<input type="text" id="port" value="9091" size="5" />
+		</p>
+		<p>
+			<label for="rpc_path">rpc path:</label>
+			http://<span id="server_output">localhost</span>:<span id="port_output">9091</span>/<input type="text" id="rpc_path" value="transmission/rpc" />
+		</p>
+	</fieldset>
+
+	<fieldset id="authentication_container" class="disabled">
+		<legend>
+			<input type="checkbox" id="authentication_enabled" />
+			<label for="authentication_enabled">Authentication</label>
+		</legend>
+		<p>
+			<label for="username">username:</label>
+			<input type="text" id="username" value="" disabled="disabled" />
+		</p>
+		<p>
+			<label for="password">password:</label>
+			<input type="password" id="password" value="" disabled="disabled" />
+		</p>
+		<p>
+			<input type="checkbox" id="encryption_enabled" disabled="disabled" />
+			<label for="encryption_enabled">encrypt with <acronym title="Advanced Encryption Standard (Rijndael)">AES</acronym></label>
+		</p>
+		<p>
+			<label for="encryption_key">encryption key</label>
+			<input type="password" id="encryption_key" disabled="disabled" value="" />
+		</p>
+	</fieldset>
+
+	<fieldset>
+		<legend>Options</legend>
+		<p>
+			<input type="checkbox" id="add_trackers" checked="checked" />
+			<label for="add_trackers">add aggregated trackers to torrent</label>
+		</p>
+	</fieldset>
+
+	<button type="button" class="positive" id="save">save</button>
+	<button type="button" class="negative" id="cancel">cancel</button>
+	<button type="button" id="reset">reset defaults</button>
+
+	<script type="text/javascript" src="options.js"></script>
+</body>
+</html>
