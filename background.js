@@ -128,14 +128,14 @@
 	};
 
 	var buildUrl = function(protocol, host, port, path){
-		return protocol + '://' + host + ':' + port + ('/'+path).replace(/\/(\.?\/)+/g, '/');
+		return protocol + '://' + host + ':' + port + path.replace(/\/(\.?\/)+/g, '/');
 	};
 
 	var startSession = function(callback){
 		log('initiating transmission session');
 		var xhr = new XMLHttpRequest;
 		xhr.onreadystatechange = function(){
-			if(xhr.readyState!=4 || xhr.status!=409) return;
+			if(xhr.readyState!=4 || (xhr.status!=409 && xhr.status!=200)) return;
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
 			log('retrieved session id', sessionId, callback);
 			if(typeof callback=='function') callback(sessionId);

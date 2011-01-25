@@ -128,7 +128,7 @@
 		setOption('ServerHost', $('host').value);
 		var port = $('port').value;
 		setOption('ServerPort', port==+port ? +port : null);
-		var path = $('path').value.replace(/\/(\.?\/)+/g,'/');
+		var path = ('/'+$('path').value).replace(/\/(\.?\/)+/g,'/');
 		setOption('ServerPath', path);
 
 		setOption('AuthenticationEnabled', !!$('authentication_enabled').checked);
