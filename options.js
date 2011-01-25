@@ -1,15 +1,5 @@
 (function($, global, undefined){
 
-	localStorage.defaultServerProtocol          = JSON.stringify('https');
-	localStorage.defaultServerHost              = JSON.stringify('localhost');
-	localStorage.defaultServerPort              = JSON.stringify(9091);
-	localStorage.defaultServerPath              = JSON.stringify('/transmission/rpc');
-	localStorage.defaultAuthenticationEnabled   = JSON.stringify(false);
-	localStorage.defaultAuthenticationEncrypted = JSON.stringify(false);
-	localStorage.defaultAuthenticationUsername  = JSON.stringify('');
-	localStorage.defaultAuthenticationPassword  = JSON.stringify('');
-	localStorage.defaultAddTrackers             = JSON.stringify(true);
-	localStorage.defaultAdditionalTrackers      = JSON.stringify([]);
 	console.log(localStorage);
 
 	var hasClass = function(klass){
@@ -126,8 +116,10 @@
 		fixAuthentication();
 
 		var elemAddTrackers = $('add_trackers'),
+			elemStartAutomatically = $('start_automatically'),
 			elemAdditionalTrackers = $('additional_trackers');
 		elemAddTrackers.checked = !!getOption('AddTrackers');
+		elemStartAutomatically.checked = !!getOption('StartAutomatically');
 		elemAdditionalTrackers.innerText = getOption('AdditionalTrackers').join("\n");
 	})();
 
@@ -136,7 +128,7 @@
 		setOption('ServerHost', $('host').value);
 		var port = $('port').value;
 		setOption('ServerPort', port==+port ? +port : null);
-		var path = $('path').value.replace(/\/(\.\/|\/)+/g,'/');
+		var path = $('path').value.replace(/\/(\.?\/)+/g,'/');
 		setOption('ServerPath', path);
 
 		setOption('AuthenticationEnabled', !!$('authentication_enabled').checked);
@@ -145,6 +137,7 @@
 		setOption('AuthenticationEncrypted', !!$('encryption_enabled').checked);
 
 		setOption('AddTrackers', !!$('add_trackers').checked);
+		setOption('StartAutomatically', !!$('start_automatically').checked);
 		var trackers = $('additional_trackers').value;
 		trackers = trackers.split(/\s+/g).filter(function(_){ return !!_; });
 		setOption('AdditionalTrackers', trackers);

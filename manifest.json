@@ -39,6 +39,7 @@
 	, "*://*.torrage.ws/*"
 	, "*://*.torcache.com/*"
 	, "*://*.zoink.it/*"
+	, "*://*/*"
 	]
 , "options_page"   : "options.html"
 , "background_page": "background.html"

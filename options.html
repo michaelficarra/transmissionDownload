@@ -57,14 +57,18 @@
 		</p>
 		<p>
 			<label for="encryption_key">encryption key:</label>
-			<input type="password" id="encryption_key" disabled="disabled" value="" />
+			<input type="password" id="encryption_key" value="" />
 		</p>
 	</fieldset>
 
 	<fieldset>
 		<legend>Options</legend>
 		<p>
-			<input type="checkbox" id="add_trackers" checked="checked" />
+			<input type="checkbox" id="start_automatically" />
+			<label for="start_automatically">automatically start added torrent</label>
+		</p>
+		<p>
+			<input type="checkbox" id="add_trackers" />
 			<label for="add_trackers">add aggregated trackers to torrent</label>
 		</p>
 		<p>
