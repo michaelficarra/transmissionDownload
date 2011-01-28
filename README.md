@@ -1,7 +1,8 @@
 ## TODO (before release)
 
-* inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
+* fix bug: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
 * add "popup" prompt for symmetric key when using encrypted credentials
+* inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
 * set up automatic updates
 * do rigorous hand testing
 * remove logging
@@ -11,6 +12,7 @@
 
 ## TODO (after release)
 
+* don't require save button on options page
 * find a way to test this thing
 * go to transmission web interface (on torrent add) if tab is already open (see [goToInbox function](http://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/extensions/docs/examples/extensions/gmail/background.html?content-type=text/plain))
 * add support for multiple servers (don't forget to no longer cache the session ID as a single value!)
