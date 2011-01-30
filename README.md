@@ -1,7 +1,8 @@
 ## TODO (before release)
 
-* fix bug: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
+* verify bug fix: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
 * add "popup" prompt for symmetric key when using encrypted credentials
+* add message area to popup for outputting status messages (torrent added, trackers added, etc.)
 * inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
 * set up automatic updates
 * do rigorous hand testing

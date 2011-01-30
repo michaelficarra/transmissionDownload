@@ -94,7 +94,7 @@
 				var text = xhrTorrentz.responseText;
 				if(!text) tryTorrentz();
 				var list = text.match(/(.{0,3}ps?:\/\/.+\/announce)/gi);
-				if(list.length < 1) tryTorrentz();
+				if(!list || list.length < 1) tryTorrentz();
 				for(var i=0,l=list.length; i<l; ++i)
 					if(0 > trackers.indexOf(list[i]))
 						trackers.push(list[i]);
@@ -166,7 +166,10 @@
 				// handle 409s (for CSRF token timeout) by asking for a new token
 				if(xhr.status==409)
 					return startSession(function(newSessionId){
-						return addTorrent(info_hash, newSessionId, callback);
+						// TODO: DRY this up (see initializationCallback below)
+						if(!newSessionId) throw new Error('Could not establish a secure session with the transmission server');
+						transmissionSessionId = newSessionId;
+						return addTorrent(info_hash, callback);
 					});
 				if(xhr.status!=200) return tryAgain();
 				var response = JSON.parse(xhr.responseText);
