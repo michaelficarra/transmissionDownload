@@ -135,7 +135,9 @@
 		log('initiating transmission session');
 		var xhr = new XMLHttpRequest;
 		xhr.onreadystatechange = function(){
-			if(xhr.readyState!=4 || (xhr.status!=409 && xhr.status!=200)) return;
+			if(xhr.readyState!=4) return
+			if(xhr.status!=409 && xhr.status!=200)
+				throw new Error('Could not establish a secure session with the transmission server');
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
 			log('retrieved session id', sessionId, callback);
 			if(typeof callback=='function') callback(sessionId);
@@ -173,7 +175,7 @@
 					});
 				if(xhr.status!=200) return tryAgain();
 				var response = JSON.parse(xhr.responseText);
-				if(response.result != 'success') return tryAgain();
+				if(response.result != 'success') throw new Error("transmission returned error: " + response.result);
 				log('retrieved successful response', response.arguments['torrent-added'].id, response);
 				if(typeof callback=='function') callback(response.arguments['torrent-added']);
 			};
@@ -222,7 +224,7 @@
 		if(currentTab < 0) return;
 		chrome.tabs.sendRequest(currentTab, {type:'info_hash'}, function(info_hash){
 			log('determined info_hash',info_hash);
-			if(!info_hash) return;
+			if(!info_hash) throw new Error('Could not determine info_hash');
 			server =
 				{ protocol: getOption('ServerProtocol')
 				, host: getOption('ServerHost')
