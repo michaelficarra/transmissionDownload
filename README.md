@@ -1,3 +1,5 @@
+*Warning*: this plugin is not ready to be used yet; just don't use it
+
 ## TODO (before release)
 
 * verify bug fix: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
@@ -9,6 +11,7 @@
 * remove logging
 * bump version
 * package the plugin
+* write up installation/usage for README
 
 
 ## TODO (after release)
