@@ -60,12 +60,6 @@
 		currentTab = tabId;
 		if(changeInfo.status == 'complete') refreshIcon(tab);
 	});
-	// show icon as page action
-	//chrome.tabs.getSelected(null, function(tab) {
-	//	if(!tab) return;
-	//	currentTab = tab.id;
-	//	refreshIcon(tab);
-	//});
 
 
 	var getTrackers = function(info_hash, callback){
@@ -143,8 +137,8 @@
 			if(typeof callback=='function') callback(sessionId);
 		};
 		xhr.open('GET', buildUrl(server.protocol, server.host, server.port, server.path), true);
-		if(authentication.enabled)
-			xhr.setRequestHeader('Authorization', 'Basic '+Base64.encode(authentication.username+':'+authentication.password));
+		var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
+		if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 		xhr.send();
 	};
 
@@ -190,6 +184,8 @@
 			xhr.open('POST', buildUrl(server.protocol, server.host, server.port, server.path), true);
 			xhr.setRequestHeader('X-Transmission-Session-Id', transmissionSessionId);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
+			if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
 		})();
 	};
@@ -215,6 +211,8 @@
 			xhr.open('POST', buildUrl(server.protocol, server.host, server.port, server.path), true);
 			xhr.setRequestHeader('X-Transmission-Session-Id', transmissionSessionId);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
+			if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
 		});
 	};
@@ -227,15 +225,15 @@
 			if(!info_hash) throw new Error('Could not determine info_hash');
 			server =
 				{ protocol: getOption('ServerProtocol')
-				, host: getOption('ServerHost')
-				, port: getOption('ServerPort')
-				, path: getOption('ServerPath')
+				, host:     getOption('ServerHost')
+				, port:     getOption('ServerPort')
+				, path:     getOption('ServerPath')
 				};
 			authentication =
-				{ enabled: getOption('AuthenticationEnabled')
+				{ enabled:   getOption('AuthenticationEnabled')
 				, encrypted: getOption('AuthenticationEncrypted')
-				, username: getOption('AuthenticationUsername')
-				, password: getOption('AuthenticationPassword')
+				, username:  getOption('AuthenticationUsername')
+				, password:  getOption('AuthenticationPassword')
 				};
 			if(authentication.encrypted) throw new Error('Encrypted usernames/passwords not yet supported');
 			var initializationCallback = function(sessionId){
