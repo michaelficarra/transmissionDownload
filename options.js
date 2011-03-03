@@ -1,7 +1,5 @@
 (function($, global, undefined){
 
-	console.log(localStorage);
-
 	var hasClass = function(klass){
 		return new RegExp('(^|\\s)'+klass+'(\\s|$)').test(this.className);
 	},
@@ -13,6 +11,17 @@
 		if(!hasClass.call(this,klass)) return;
 		this.className = this.className.replace(new RegExp('(^|\\s+)'+klass+'($|\\s+)','g'),' ');
 	};
+
+	var updateFullRpcUrl = function(){
+		$('protocol_output').innerText = $('protocol').value;
+		$('host_output')    .innerText = $('host').value;
+		$('port_output')    .innerText = +$('port').value;
+		$('path_output')    .innerText = ('/'+$('path').value).replace(/\/(\.?\/)+/g,'/');
+	};
+	$('protocol').addEventListener('change', updateFullRpcUrl);
+	$('host')    .addEventListener('keyup' , updateFullRpcUrl);
+	$('port')    .addEventListener('keyup' , updateFullRpcUrl);
+	$('path')    .addEventListener('keyup' , updateFullRpcUrl);
 
 	var fixAuthentication = function(){
 		var elemAuthenticationEnabled = $('authentication_enabled'),
@@ -121,6 +130,8 @@
 		elemAddTrackers.checked = !!getOption('AddTrackers');
 		elemStartAutomatically.checked = !!getOption('StartAutomatically');
 		elemAdditionalTrackers.innerText = getOption('AdditionalTrackers').join("\n");
+
+		updateFullRpcUrl();
 	})();
 
 	var saveOptions = function(){

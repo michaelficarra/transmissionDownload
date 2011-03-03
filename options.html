@@ -2,7 +2,8 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" type="text/css" href="blueprint.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="blueprint.css" /> -->
+	<link rel="stylesheet" type="text/css" href="chrome.css" />
 	<link rel="stylesheet" type="text/css" href="options.css" />
 	<script type="text/javascript" src="AES.js"></script>
 	<script type="text/javascript" src="Base64.js"></script>
@@ -10,78 +11,88 @@
 <body class="container">
 
 	<img src="icons/transmission.48.png" id="logo" />
-	<h2 class="title">Transmission Torrent Downloader</h2>
+	<h1 class="title">Transmission Torrent Downloader</h1>
 
-	<fieldset>
-		<legend>server configuration</legend>
-		<p>
-			<label for="protocol">protocol:</label>
-			<select id="protocol">
-				<option value="https">https</option>
-				<option value="http">http</option>
-			</select>
-		</p>
-		<p>
-			<label for="host">host / ip:</label>
-			<input type="text" id="host" />
-		</p>
-		<p>
-			<label for="port">port:</label>
-			<input type="text" id="port" size="5" />
-		</p>
-		<p>
-			<label for="path">rpc path:</label>
-			<input type="text" id="path" />
-		</p>
-		<p>
-			<span id="full_rpc_url"><span id="protocol_output">https</span>://<span id="server_output">localhost</span>:<span id="port_output">9091</span>/<span id="path_output">transmission/rpc</span></span>
-		</p>
-	</fieldset>
+	<section>
+		<h3>server configuration</h3>
+		<div>
+			<label>
+				protocol:
+				<select id="protocol">
+					<option value="https">https</option>
+					<option value="http">http</option>
+				</select>
+			</label>
+			<label>
+				host / ip:
+				<input type="text" id="host" />
+			</label>
+			<label>
+				port:
+				<input type="text" id="port" size="5" />
+			</label>
+			<label>
+				rpc path:
+				<input type="text" id="path" />
+			</label>
+			<p>
+				<span id="full_rpc_url">
+					<span id="protocol_output">https</span>://<span id="host_output">localhost</span>:<span id="port_output">9091</span><span id="path_output">transmission/rpc</span>
+				</span>
+			</p>
+		</div>
+	</section>
 
-	<fieldset id="authentication_container" class="disabled">
-		<legend>
-			<input type="checkbox" id="authentication_enabled" />
-			<label for="authentication_enabled">Authentication</label>
-		</legend>
-		<p>
-			<label for="username">username:</label>
-			<input type="text" id="username" value="" />
-		</p>
-		<p>
-			<label for="password">password:</label>
-			<input type="password" id="password" value="" />
-		</p>
-		<p>
-			<input type="checkbox" id="encryption_enabled" />
-			<label for="encryption_enabled">encrypt with <acronym title="Advanced Encryption Standard (Rijndael)">AES</acronym></label>
-		</p>
-		<p>
-			<label for="encryption_key">encryption key:</label>
-			<input type="password" id="encryption_key" value="" />
-		</p>
-	</fieldset>
+	<section id="authentication_container" class="disabled">
+		<h3>
+			<label>
+				<input type="checkbox" id="authentication_enabled" />
+				Authentication
+			</label>
+		</h3>
+		<div>
+			<label>
+				username:
+				<input type="text" id="username" value="" />
+			</label>
+			<label>
+				password:
+				<input type="password" id="password" value="" />
+			</label>
+			<label>
+				<input type="checkbox" id="encryption_enabled" />
+				encrypt with <acronym title="Advanced Encryption Standard (Rijndael)">AES</acronym>
+			</label>
+			<label>
+				encryption key:
+				<input type="password" id="encryption_key" value="" />
+			</label>
+		</div>
+	</section>
 
-	<fieldset>
-		<legend>Options</legend>
-		<p>
-			<input type="checkbox" id="start_automatically" />
-			<label for="start_automatically">automatically start added torrent</label>
-		</p>
-		<p>
-			<input type="checkbox" id="add_trackers" />
-			<label for="add_trackers">add aggregated trackers to torrent</label>
-		</p>
-		<p>
-			<label for="additional_trackers">additional trackers to add to each torrent (1 per line)</label>
-			<textarea id="additional_trackers"></textarea>
-		</p>
-	</fieldset>
+	<section>
+		<h3>Options</h3>
+		<div>
+			<label>
+				<input type="checkbox" id="start_automatically" />
+				automatically start added torrent
+			</label>
+			<label>
+				<input type="checkbox" id="add_trackers" />
+				add aggregated trackers to torrent
+			</label>
+			<label>
+				additional trackers to add to each torrent (1 per line)
+				<textarea id="additional_trackers"></textarea>
+			</label>
+		</div>
+	</section>
 
-	<hr />
-
-	<button type="button" class="positive" id="save">save</button>
-	<button type="button" class="negative" id="cancel">cancel</button>
-	<button type="button" id="reset">reset defaults</button>
+	<div>
+		<button type="button" class="positive" id="save">save</button>
+		<button type="button" class="negative" id="cancel">cancel</button>
+		<button type="button" id="reset">reset defaults</button>
+	</div>
 
 	<script type="text/javascript" src="options.js"></script>
 </body>

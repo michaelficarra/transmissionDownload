@@ -18,7 +18,6 @@
 
 * don't require save button on options page
 * find a way to test this thing
-* pretty up the settings page
 * go to transmission web interface (on torrent add) if tab is already open (see [goToInbox function](http://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/extensions/docs/examples/extensions/gmail/background.html?content-type=text/plain))
 * add support for multiple servers (don't forget to no longer cache the session ID as a single value!)
 * make popup come up on click, select server, enter encryption key (only show input if passwords are encrypted), press go button, wait for response, close popup or present error and retry button
