@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="chrome.css" />
+	<link rel="stylesheet" type="text/css" href="popup.css" />
+	<script type="text/javascript" src="AES.js"></script>
+	<script type="text/javascript" src="Base64.js"></script>
+</head>
+<body>
+
+	<p>
+		<strong>http://makoto:9091/transmission/rpc</strong>
+	</p>
+
+	<div class="informational-text">
+		The authentication credentials have been stored encrypted. Provide
+		the symmetric key used to encrypt them.
+	</div>
+
+	<p>
+		<input type="password" id="symmetric_key" value="" />
+	</p>
+
+	<ol id="log">
+		<li class="info">Determined info_hash</li>
+		<li class="info">Sent torrent to transmission</li>
+		<li class="error">Error: duplicate torrent</li>
+		<li class="info">Added additional trackers</li>
+	</ol>
+
+	<p>
+		<button id="addTorrent" disabled="disabled">Add Torrent</button>
+	</p>
+
+	<script type="text/javascript" src="popup.js"></script>
+</body>
+</html>

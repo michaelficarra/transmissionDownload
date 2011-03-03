@@ -32,7 +32,7 @@
 		(state ? removeClass : addClass).call(elemAuthenticationContainer,'disabled');
 		$('username').disabled = !state || elemEncryptionEnabled.checked;
 		$('password').disabled = !state || elemEncryptionEnabled.checked;
-		$('encryption_key').disabled = !state;
+		$('symmetric_key').disabled = !state;
 		elemEncryptionEnabled.disabled = !state;
 		elemAuthenticationPassword.type = elemEncryptionEnabled.checked ? 'text' : 'password';
 	}
@@ -40,7 +40,7 @@
 	$('authentication_enabled').addEventListener('click',fixAuthentication);
 	$('encryption_enabled').addEventListener('click',function(){
 		var username, password,
-			elemEncryptionKey = $('encryption_key'),
+			elemEncryptionKey = $('symmetric_key'),
 			encryptionKey = elemEncryptionKey.value,
 			elemAuthenticationUsername = $('username'),
 			elemAuthenticationPassword = $('password');

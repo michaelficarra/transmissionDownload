@@ -55,7 +55,7 @@ h1 {
 
 section {
 	-webkit-box-orient: horizontal;
-	border-bottom: 1px solid #eeeeee;
+	border-bottom: 1px solid #ddd;
 	display: -webkit-box;
 	margin-top: 17px;
 	margin-bottom: 17px;

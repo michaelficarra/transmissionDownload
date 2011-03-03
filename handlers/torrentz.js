@@ -8,7 +8,7 @@
 	};
 
 	chrome.extension.onRequest.addListener(function(request,sender,respond){
-		if(request.type != 'info_hash') return;
+		if(request.type != 'info_hash') return respond(null);
 		respond(getInfoHash());
 	});
 

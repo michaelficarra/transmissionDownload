@@ -2,6 +2,7 @@
 
 ## TODO (before release)
 
+* use proper node function signatures (first argument is `err`)
 * verify bug fix: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
 * add "popup" prompt for symmetric key when using encrypted credentials
 * add message area to popup for outputting status messages (torrent added, trackers added, etc.)

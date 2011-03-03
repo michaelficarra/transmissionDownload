@@ -12,12 +12,11 @@
 	localStorage.defaultAddTrackers             = JSON.stringify(true);
 	localStorage.defaultAdditionalTrackers      = JSON.stringify([]);
 
-	var currentTab = -1;
-
 	var log = function(){
 		var args = Array.prototype.slice.call(arguments);
 		console.log.apply(console,['transmissionDownload','--'].concat(args));
 	}
+
 	var getOption = function(opt){
 		var def, obj;
 		if((obj=localStorage['opt'+opt])!=null) return JSON.parse(obj);
@@ -48,16 +47,10 @@
 	}
 	// show icon as page action on tab change
 	chrome.tabs.onSelectionChanged.addListener(function(tabId) {
-		//if(currentTab > -1)
-		//	chrome.tabs.get(currentTab, function(tab){
-		//		if(tab) chrome.pageAction.hide(tab.id);
-		//	});
-		currentTab = tabId;
 		chrome.tabs.get(tabId,refreshIcon);
 	});
 	// show icon as page action on page load
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-		currentTab = tabId;
 		if(changeInfo.status == 'complete') refreshIcon(tab);
 	});
 
@@ -127,12 +120,18 @@
 
 	var startSession = function(callback){
 		log('initiating transmission session');
+		if(transmissionSessionId) {
+			if(typeof callback=='function')
+				callback(transmissionSessionId);
+			return;
+		}
 		var xhr = new XMLHttpRequest;
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState!=4) return
-			if(xhr.status!=409 && xhr.status!=200)
-				throw new Error('Could not establish a secure session with the transmission server');
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
+			if(xhr.status!=409 && xhr.status!=200 || !sessionId)
+				throw new Error('Could not establish a secure session with the transmission server');
+			transmissionSessionId = sessionId;
 			log('retrieved session id', sessionId, callback);
 			if(typeof callback=='function') callback(sessionId);
 		};
@@ -144,7 +143,7 @@
 
 	var addTorrent = function(info_hash, callback){
 		log('adding torrent for',info_hash);
-		if(!info_hash) throw new Error('Cannot add torrent with null info_hash');
+		if(!info_hash) throw new Error('Cannot add torrent without info_hash');
 		var sources =
 			[ 'http://torrage.com/torrent/#{info_hash}.torrent'
 			, 'http://torcache.com/torrent/#{info_hash}.torrent'
@@ -162,10 +161,8 @@
 				// handle 409s (for CSRF token timeout) by asking for a new token
 				if(xhr.status==409)
 					return startSession(function(newSessionId){
-						// TODO: DRY this up (see initializationCallback below)
-						if(!newSessionId) throw new Error('Could not establish a secure session with the transmission server');
-						transmissionSessionId = newSessionId;
-						return addTorrent(info_hash, callback);
+						if(!newSessionId) return;
+						addTorrent(info_hash, callback);
 					});
 				if(xhr.status!=200) return tryAgain();
 				var response = JSON.parse(xhr.responseText);
@@ -190,16 +187,18 @@
 		})();
 	};
 
-	var addTrackers = function(torrent){
+	var addTrackers = function(torrent, callback){
 		if(!torrent || !torrent.id || !torrent.hashString)
 			throw new Error('Attempted to add trackers to an invalid torrent');
-		log('addTorrent callback called');
 		getTrackers(torrent.hashString, function(trackers){
 			var additionalTrackers = getOption('AdditionalTrackers');
 			trackers = trackers.concat(additionalTrackers);
 			log('retrieved trackers',trackers);
 			var xhr = new XMLHttpRequest;
-			xhr.onreadystatechange = function(){};
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState!=4 || xhr.status!=200) return;
+				if(typeof callback=='function') callback();
+			};
 			var postData =
 				{ method: 'torrent-set'
 				, arguments:
@@ -217,34 +216,33 @@
 		});
 	};
 
-	chrome.pageAction.onClicked.addListener(function(){
-		log('clicked');
-		if(currentTab < 0) return;
-		chrome.tabs.sendRequest(currentTab, {type:'info_hash'}, function(info_hash){
-			log('determined info_hash',info_hash);
-			if(!info_hash) throw new Error('Could not determine info_hash');
-			server =
-				{ protocol: getOption('ServerProtocol')
-				, host:     getOption('ServerHost')
-				, port:     getOption('ServerPort')
-				, path:     getOption('ServerPath')
-				};
-			authentication =
-				{ enabled:   getOption('AuthenticationEnabled')
-				, encrypted: getOption('AuthenticationEncrypted')
-				, username:  getOption('AuthenticationUsername')
-				, password:  getOption('AuthenticationPassword')
-				};
-			if(authentication.encrypted) throw new Error('Encrypted usernames/passwords not yet supported');
-			var initializationCallback = function(sessionId){
-				if(!sessionId) throw new Error('Could not establish a secure session with the transmission server');
-				transmissionSessionId = sessionId;
-				addTorrent(info_hash, addTrackers);
-			};
-			if(transmissionSessionId)
-				initializationCallback(transmissionSessionId);
-			else
-				startSession(initializationCallback);
+	chrome.extension.onRequest.addListener(function(request, sender, respond){
+		if(request.type != 'addTorrent') return respond(null);
+		console.log('background.js addTorrent request received');
+		chrome.tabs.getSelected(null, function(tab) {
+			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
+				log('determined info_hash',info_hash);
+				if(!info_hash) throw new Error('Could not determine info_hash');
+				server =
+					{ protocol: getOption('ServerProtocol')
+					, host:     getOption('ServerHost')
+					, port:     getOption('ServerPort')
+					, path:     getOption('ServerPath')
+					};
+				authentication =
+					{ enabled:   getOption('AuthenticationEnabled')
+					, encrypted: getOption('AuthenticationEncrypted')
+					, username:  getOption('AuthenticationUsername')
+					, password:  getOption('AuthenticationPassword')
+					};
+				if(authentication.encrypted) throw new Error('Encrypted usernames/passwords not yet supported');
+				addTorrent(info_hash, function(torrent){
+					addTrackers(torrent, function(){
+						respond({type:'close'});
+					});
+				});
+			});
 		});
 	});
+
 })(this)
