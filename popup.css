@@ -1,32 +1,29 @@
 body {
-	width: 280px;
+	min-width: 280px;
 }
 
-#addTorrent {
-	width: 100%;
-}
-
-#log {
-	display: none;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-#log li {
-	border-left: 4px solid;
-	padding-left: 0.5em;
-	margin: 5px 0;
-}
-#log li.info { border-color: #55d976; }
-#log li.error {
-	border-color: #d96255;
-	color: #c94235;
-}
-
-#symmetric_key {
+input#symmetric_key {
 	display: block;
 	margin: 5px auto;
 	width: 100%;
 	padding: 3px 0;
 }
+
+#log {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+#log li {
+	border-left: 4px solid;
+	padding-left: 0.5em;
+	margin: 5px 0;
+}
+#log li.info { border-color: #ddd; }
+#log li.done { border-color: #55d976; }
+#log li.error {
+	border-color: #d96255;
+	color: #c94235;
+}
+
+button#addTorrent, button#close { width: 100%; }

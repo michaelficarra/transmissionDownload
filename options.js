@@ -1,16 +1,4 @@
-(function($, global, undefined){
-
-	var hasClass = function(klass){
-		return new RegExp('(^|\\s)'+klass+'(\\s|$)').test(this.className);
-	},
-	addClass = function(klass){
-		if(hasClass.call(this,klass)) return;
-		this.className = this.className.split(' ').concat(klass).join(' ');
-	},
-	removeClass = function(klass){
-		if(!hasClass.call(this,klass)) return;
-		this.className = this.className.replace(new RegExp('(^|\\s+)'+klass+'($|\\s+)','g'),' ');
-	};
+(function(global, undefined){
 
 	var updateFullRpcUrl = function(){
 		$('protocol_output').innerText = $('protocol').value;
@@ -94,15 +82,6 @@
 		loadOptions();
 	});
 
-	var getOption = function(opt){
-			var def, obj;
-			if((obj=localStorage['opt'+opt])!=null) return JSON.parse(obj);
-			return (def=localStorage['default'+opt])!=null ? JSON.parse(def) : null;
-		},
-		setOption = function(opt, value){
-			localStorage['opt'+opt] = value==null ? null : JSON.stringify(value);
-		};
-
 	var loadOptions;
 	(loadOptions = function(){
 		var elemProtocol = $('protocol'),
@@ -161,4 +140,4 @@
 		saveOptions();
 	});
 
-})(function(){ return document.getElementById.apply(document,arguments) }, this)
+})(this)

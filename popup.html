@@ -6,31 +6,34 @@
 	<link rel="stylesheet" type="text/css" href="popup.css" />
 	<script type="text/javascript" src="AES.js"></script>
 	<script type="text/javascript" src="Base64.js"></script>
+	<script type="text/javascript" src="util.js"></script>
 </head>
 <body>
 
-	<p>
-		<strong>http://makoto:9091/transmission/rpc</strong>
-	</p>
+	<h3 id="rpc"></h3>
 
-	<div class="informational-text">
-		The authentication credentials have been stored encrypted. Provide
-		the symmetric key used to encrypt them.
-	</div>
+	<p id="symmetricKeyContainer">
+		<span class="informational-text">
+			The authentication credentials have been stored encrypted. Provide
+			the symmetric key used to encrypt them.
+		</span>
 
-	<p>
 		<input type="password" id="symmetric_key" value="" />
 	</p>
 
-	<ol id="log">
+	<ol id="log" class="hidden">
+		<li class="info">Established secure connection to transmission</li>
 		<li class="info">Determined info_hash</li>
 		<li class="info">Sent torrent to transmission</li>
 		<li class="error">Error: duplicate torrent</li>
 		<li class="info">Added additional trackers</li>
+		<li class="info">Finished</li>
 	</ol>
 
 	<p>
 		<button id="addTorrent" disabled="disabled">Add Torrent</button>
+		<button id="close" class="hidden">Close</button>
+		<button id="retry" class="hidden">Retry</button>
 	</p>
 
 	<script type="text/javascript" src="popup.js"></script>

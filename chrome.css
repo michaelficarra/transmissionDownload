@@ -21,6 +21,10 @@ a:active {
 	color: grey;
 }
 
+.hidden {
+	display: none !important;
+}
+
 .overlay {
 	-webkit-box-align: center;
 	-webkit-box-pack: center;
