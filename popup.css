@@ -17,7 +17,7 @@ input#symmetric_key {
 #log li {
 	border-left: 4px solid;
 	padding-left: 0.5em;
-	margin: 7px 0;
+	margin: 6px 0;
 }
 #log li.info { border-color: #ddd; }
 #log li.done { border-color: #55d976; }

@@ -5,7 +5,6 @@
 * use proper node function signatures (first argument is `err`)
 * handle errors by adding retry button (must be using node style callback signatures first)
 * verify bug fix: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
-* make popup ask for symmetric key when using encrypted credentials
 * test: only adds additional trackers if the option is enabled
 * inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
 * set up automatic updates

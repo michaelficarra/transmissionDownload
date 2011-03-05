@@ -1,8 +1,18 @@
 (function(global, undefined){
 
 	var transmissionSessionId = null,
-		server,
-		authentication;
+		server =
+			{ protocol: getOption('ServerProtocol')
+			, host:     getOption('ServerHost')
+			, port:     getOption('ServerPort')
+			, path:     getOption('ServerPath')
+			},
+		authentication =
+			{ enabled:   getOption('AuthenticationEnabled')
+			, encrypted: getOption('AuthenticationEncrypted')
+			, username:  getOption('AuthenticationUsername')
+			, password:  getOption('AuthenticationPassword')
+			};
 
 	var log = function(type){
 			return function(msg){
@@ -194,6 +204,25 @@
 		return function(){
 			if(this.value == lastKey) return;
 			lastKey = this.value;
+
+			var username = getOption('AuthenticationUsername'),
+				password = getOption('AuthenticationPassword');
+
+			try {
+				authentication.username = AES.decrypt(this.value, Base64.decode(username));
+				authentication.password = AES.decrypt(this.value, Base64.decode(password));
+				info('decrypted username, password', authentication.username, authentication.password);
+				// TODO: modularize this part for future DRYness
+				addClass.call($('symmetricKeyContainer'), 'hidden');
+				addClass.call($('close'), 'hidden');
+				$('addTorrent').disabled = false;
+				removeClass.call($('addTorrent'), 'hidden');
+				$('addTorrent').focus();
+			} catch(e) {
+				error('caught error while decrypting username, password', e);
+				authentication.username = username;
+				authentication.password = password;
+			}
 		};
 	})());
 
@@ -210,18 +239,6 @@
 			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
 				if(!info_hash) return error('could not determine info_hash', info_hash);
 				info('determined info_hash', info_hash);
-				server =
-					{ protocol: getOption('ServerProtocol')
-					, host:     getOption('ServerHost')
-					, port:     getOption('ServerPort')
-					, path:     getOption('ServerPath')
-					};
-				authentication =
-					{ enabled:   getOption('AuthenticationEnabled')
-					, encrypted: getOption('AuthenticationEncrypted')
-					, username:  getOption('AuthenticationUsername')
-					, password:  getOption('AuthenticationPassword')
-					};
 				var success = true;
 				addTorrent(info_hash, function(torrent){
 					info('added torrent ' + JSON.stringify(torrent.name), torrent);
@@ -240,7 +257,10 @@
 
 	var needsDecryption = getOption('AuthenticationEnabled') && getOption('AuthenticationEncrypted');
 	(needsDecryption ? removeClass : addClass).call($('symmetricKeyContainer'), 'hidden');
+	if(needsDecryption) $('symmetric_key').focus();
+	(needsDecryption ? addClass : removeClass).call($('addTorrent'), 'hidden');
 	$('addTorrent').disabled = needsDecryption;
+	(needsDecryption ? removeClass : addClass).call($('close'), 'hidden');
 
 	$('rpc').innerText = buildUrl(
 		getOption('ServerProtocol'),
