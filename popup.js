@@ -4,14 +4,19 @@
 		server,
 		authentication;
 
-	var log = function(type, msg){
-			var li = document.createElement('li');
-			li.innerText = msg;
-			li.className = type;
-			$('log').appendChild(li);
+	var log = function(type){
+			return function(msg){
+				(console[type] || console.log).apply(
+					console,
+					Array.prototype.slice.call(arguments));
+				var li = document.createElement('li');
+				li.innerText = msg;
+				li.className = type;
+				$('log').appendChild(li);
+			};
 		},
-		info = function(msg){ return log('info', msg); },
-		error = function(msg){ return log('error', msg); };
+		info = function(msg){ return log('info').apply(this, arguments); },
+		error = function(msg){ return log('error').apply(this, arguments); };
 
 
 	var getTrackers = function(info_hash, callback){
@@ -22,8 +27,7 @@
 					callback(trackers);
 			};
 
-		var xhrTorrentz = new XMLHttpRequest,
-			torrentzDomains =
+		var torrentzDomains =
 				[ 'https://torrentz.eu'
 				, 'https://torrentz.me'
 				, 'http://torrentz.eu'
@@ -32,15 +36,16 @@
 				, 'http://torrentz.com'
 				]
 		var tryTorrentz = function(){
-			var url = torrentzDomains.shift();
+			var xhrTorrentz = new XMLHttpRequest,
+				url = torrentzDomains.shift();
 			if(!url) return finish();
 			xhrTorrentz.onreadystatechange = function(){
 				if(xhrTorrentz.readyState!=4) return;
-				if(xhrTorrentz.status != 200) tryTorrentz();
+				if(xhrTorrentz.status != 200) return tryTorrentz();
 				var text = xhrTorrentz.responseText;
-				if(!text) tryTorrentz();
-				var list = text.match(/(.{0,3}ps?:\/\/.+\/announce)/gi);
-				if(!list || list.length < 1) tryTorrentz();
+				if(!text.trim()) return tryTorrentz();
+				var list = text.match(/((?:https?|udp):\/\/.+\/announce$)/gi);
+				if(!list || list.length < 1) return tryTorrentz();
 				for(var i=0,l=list.length; i<l; ++i)
 					if(0 > trackers.indexOf(list[i]))
 						trackers.push(list[i]);
@@ -60,8 +65,8 @@
 			var json = JSON.parse(text);
 			if(!json || typeof json.length != 'number' || json.length < 1) return finish();
 			for(var i=0,l=json.length; i<l; ++i)
-				if(0 > trackers.indexOf(json[i]['ANNOUNCE']))
-					trackers.push(json[i]['ANNOUNCE']);
+				if(0 > trackers.indexOf(json[i].ANNOUNCE))
+					trackers.push(json[i].ANNOUNCE);
 			return finish();
 		};
 		xhrBitsnoop.open('GET', url, true);
@@ -69,8 +74,10 @@
 		++running;
 		xhrBitsnoop.send();
 
+		/*
 		++running;
 		tryTorrentz();
+		*/ // disabled torrentz for now, as they just changed their announce list URLs
 	};
 
 	var startSession = function(callback){
@@ -85,9 +92,9 @@
 			if(xhr.readyState!=4) return
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
 			if(xhr.status!=409 && xhr.status!=200 || !sessionId)
-				return error('Could not establish a secure session with the transmission server');
+				return error('could not establish a secure session with the transmission server', xhr, sessionId);
 			transmissionSessionId = sessionId;
-			info('retrieved session id: ' + sessionId);
+			info('secured transmission session', sessionId);
 			if(typeof callback=='function') callback(sessionId);
 		};
 		xhr.open('GET', buildUrl(server.protocol, server.host, server.port, server.path), true);
@@ -97,18 +104,23 @@
 	};
 
 	var addTorrent = function(info_hash, callback){
-		if(!info_hash) return error('addTorrent called without info_hash');
+		if(!info_hash) return error('addTorrent called without info_hash', info_hash);
+		if(!transmissionSessionId)
+			return startSession(function(newSessionId){
+				if(!newSessionId) return;
+				addTorrent(info_hash, callback);
+			});
 		var sources =
-			[ 'http://torrage.com/torrent/#{info_hash}.torrent'
-			, 'http://torcache.com/torrent/#{info_hash}.torrent'
-			, 'http://zoink.it/torrent/#{info_hash}.torrent'
-			, 'http://torrage.ws/torrent/#{info_hash}.torrent'
+			[ { name: 'torrage.com',  url: 'http://torrage.com/torrent/#{info_hash}.torrent'  }
+			, { name: 'torcache.com', url: 'http://torcache.com/torrent/#{info_hash}.torrent' }
+			, { name: 'zoink.it',     url: 'http://zoink.it/torrent/#{info_hash}.torrent'     }
+			, { name: 'torrage.ws',   url: 'http://torrage.ws/torrent/#{info_hash}.torrent'   }
 			];
 		var tryAgain;
 		(tryAgain = function(){
 			var source = sources.shift();
-			if(!source) return error('no more hosts');
-			info('attempting host: ' + source);
+			if(!source) return error('all torrent sources failed', sources);
+			info('attempting to download torrent from ' + source.name, source);
 			var xhr = new XMLHttpRequest;
 			xhr.onreadystatechange = function(){
 				if(xhr.readyState!=4) return;
@@ -120,13 +132,13 @@
 					});
 				if(xhr.status!=200) return tryAgain();
 				var response = JSON.parse(xhr.responseText);
-				if(response.result != 'success') return error(response.result);
+				if(response.result != 'success') return error(response.result, response);
 				if(typeof callback=='function') callback(response.arguments['torrent-added']);
 			};
 			var postData =
 				{ method: 'torrent-add'
 				, arguments:
-					{ filename: source.replace('#{info_hash}', info_hash.toUpperCase())
+					{ filename: source.url.replace('#{info_hash}', info_hash.toUpperCase())
 					, paused: !getOption('StartAutomatically')
 					}
 				};
@@ -142,10 +154,15 @@
 	var addTrackers = function(torrent, callback){
 		if(!torrent || !torrent.id || !torrent.hashString)
 			return error('attempted to add trackers to an invalid torrent');
+		info('fetching tracker list');
 		getTrackers(torrent.hashString, function(trackers){
+			info('retrieved tracker list', trackers);
+			if(!trackers || !getOption('AddTrackers')) trackers = [];
 			var additionalTrackers = getOption('AdditionalTrackers');
+			info('adding supplementary trackers', trackers, additionalTrackers);
 			trackers = trackers.concat(additionalTrackers);
-			info('retrieved tracker list');
+			if(!trackers.length)
+				return typeof callback=='function' ? callback([]) : null;
 			var xhr = new XMLHttpRequest;
 			xhr.onreadystatechange = function(){
 				if(xhr.readyState!=4 || xhr.status!=200) return;
@@ -191,8 +208,8 @@
 
 		chrome.tabs.getSelected(null, function(tab) {
 			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
-				if(!info_hash) return error('Could not determine info_hash');
-				info('Determined info_hash (' + info_hash + ')');
+				if(!info_hash) return error('could not determine info_hash', info_hash);
+				info('determined info_hash', info_hash);
 				server =
 					{ protocol: getOption('ServerProtocol')
 					, host:     getOption('ServerHost')
@@ -207,10 +224,11 @@
 					};
 				var success = true;
 				addTorrent(info_hash, function(torrent){
-					info('torrent added: ' + torrent.name);
+					info('added torrent ' + JSON.stringify(torrent.name), torrent);
 					addTrackers(torrent, function(trackers){
-						info('added ' + trackers.length + ' additional trackers');
-						log('done','done');
+						if(trackers)
+							info('added ' + trackers.length + ' additional trackers', trackers);
+						log('done')('done');
 						removeClass.call($(success ? 'close' : 'retry'), 'hidden');
 					});
 				});
@@ -224,11 +242,11 @@
 	(needsDecryption ? removeClass : addClass).call($('symmetricKeyContainer'), 'hidden');
 	$('addTorrent').disabled = needsDecryption;
 
-	var protocol = getOption('ServerProtocol'),
-		host = getOption('ServerHost'),
-		port = getOption('ServerPort'),
-		path = getOption('ServerPath');
-	$('rpc').innerText = protocol + '://' + host + ':' + port + path;
+	$('rpc').innerText = buildUrl(
+		getOption('ServerProtocol'),
+		getOption('ServerHost'),
+		getOption('ServerPort'),
+		getOption('ServerPath'));
 
 	/*
 		chrome.extension.sendRequest(request, function(response){
