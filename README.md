@@ -1,11 +1,6 @@
-*Warning*: this plugin is not ready to be used yet; just don't use it
-
 ## TODO (before release)
 
 * inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
-* set up automatic updates
-* bump version
-* package the plugin
 * write up installation/usage for README
 
 
