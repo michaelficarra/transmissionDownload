@@ -23,6 +23,8 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 ## Installation
 
 0. Download [the transmissionDownload.crx file](https://github.com/michaelficarra/transmissionDownload/raw/master/transmissionDownload.crx)
+0. Open it with chrome
+0. Accept security warnings
 
 
 ## TODO
