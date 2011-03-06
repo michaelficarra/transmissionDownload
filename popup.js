@@ -163,13 +163,11 @@
 
 	var addTrackers = function(torrent, callback){
 		if(!torrent || !torrent.id || !torrent.hashString)
-			return error('attempted to add trackers to an invalid torrent');
-		info('fetching tracker list');
-		getTrackers(torrent.hashString, function(trackers){
-			info('retrieved tracker list', trackers);
-			if(!trackers || !getOption('AddTrackers')) trackers = [];
-			var additionalTrackers = getOption('AdditionalTrackers');
-			info('adding supplementary trackers', trackers, additionalTrackers);
+			return error('attempted to add trackers to an invalid torrent', torrent);
+		var additionalTrackers = getOption('AdditionalTrackers');
+		var next = function(trackers){
+			if(additionalTrackers.length)
+				info('adding supplementary trackers', additionalTrackers);
 			trackers = trackers.concat(additionalTrackers);
 			if(!trackers.length)
 				return typeof callback=='function' ? callback([]) : null;
@@ -191,7 +189,16 @@
 			var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
 			if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
-		});
+		}
+		if(getOption('AddTrackers')) {
+			info('fetching tracker list');
+			getTrackers(torrent.hashString, function(trackers){
+				info('retrieved tracker list', trackers);
+				return next(trackers || []);
+			});
+		} else {
+			next([]);
+		}
 	};
 
 
@@ -246,7 +253,9 @@
 						if(trackers)
 							info('added ' + trackers.length + ' additional trackers', trackers);
 						log('done')('done');
-						removeClass.call($(success ? 'close' : 'retry'), 'hidden');
+						if(!success) removeClass.call($('retry'), 'hidden');
+						removeClass.call($('close'), 'hidden');
+						$(success ? 'close' : 'retry').focus();
 					});
 				});
 			});

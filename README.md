@@ -2,13 +2,8 @@
 
 ## TODO (before release)
 
-* use proper node function signatures (first argument is `err`)
-* handle errors by adding retry button (must be using node style callback signatures first)
-* verify bug fix: add torrent successfully, change host, attempt to add torrent again; infinite loop (partially due to cached session id)
-* test: only adds additional trackers if the option is enabled
 * inspect [license of icon file](http://www.veryicon.com/icons/system/arcade-daze-apps-vol-1/transmission-2.html)
 * set up automatic updates
-* do rigorous hand testing
 * bump version
 * package the plugin
 * write up installation/usage for README
@@ -16,6 +11,8 @@
 
 ## TODO (after release)
 
+* use proper node function signatures (first argument is `err`)
+* handle errors by adding retry button (must be using node style callback signatures first)
 * don't make user type in password repeatedly (send request to background page to store password in closure for X seconds)
 * don't require save button on options page
 * find a way to test this thing
