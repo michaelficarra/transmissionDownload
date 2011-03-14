@@ -30,7 +30,10 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 ## TODO
 
 * use proper node function signatures (first argument should be `err`)
-* handle errors by adding retry button (must be using node style callback signatures first)
+	* handle errors by adding retry button (must be using node style callback signatures first)
+* change `addTorrent` signature to accept URLs, not `info_hash`es
+	* move looping/retrying behaviour from `addTorrent` to event handler
+	* add support for adding torrents by torrent download URL (for private torrents)
 * don't make user type in password repeatedly (send request to background page to store password in closure for X seconds)
 * don't require save button on options page
 * find a way to test this thing
@@ -43,8 +46,8 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * add support for multiple servers (don't forget to no longer cache the session ID as a single value!)
 * rewrite in CoffeeScript
 * think about allowing generic handler to find any 40-character hex string anywhere
-* insert icons next to torrentz search results for extra accessibility (optional, defaulting to disabled)
-* write handlers for some more torrent websites without magnet links or with better alternatives
+* insert icons next to search results for extra accessibility (optional, defaulting to disabled)
+* (permanent) write handlers for some more torrent websites without magnet links or with better alternatives
 
 
 ## Building / Releasing
