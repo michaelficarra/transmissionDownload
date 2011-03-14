@@ -1,5 +1,6 @@
 (function(){
 
+	// only load generic handler if no specific handler exists
 	if(chrome.extension.onRequest.hasListeners()) return;
 
 	var getInfoHash = function(){
@@ -11,13 +12,16 @@
 	};
 
 	chrome.extension.onRequest.addListener(function(request,sender,respond){
-		if(request.type != 'info_hash') return respond(null);
-		respond(getInfoHash());
-	});
-
-	chrome.extension.onRequest.addListener(function(request,sender,respond){
-		if(request.type != 'hasMagnet') return respond(null);
-		respond(getInfoHash() != null);
+		switch(request.type){
+			case 'info_hash':
+				respond(getInfoHash());
+				break;
+			case 'hasMagnet':
+				respond(getInfoHash() != null);
+				break;
+			default:
+				respond(null);
+		}
 	});
 
 })()
