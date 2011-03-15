@@ -37,6 +37,7 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * don't make user type in password repeatedly (send request to background page to store password in closure for X seconds)
 * don't require save button on options page
 * find a way to test this thing
+* keyboard shortcut
 * standardize element id naming convention (underscore or camel case)
 * remove shared-scope `server`, `authentication`, and `transmissionSessionId`; pass them around instead (somehow)
 * find a way to make it continue even if popup is closed
