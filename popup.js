@@ -206,7 +206,7 @@
 		window.close();
 	});
 
-	$('symmetric_key').addEventListener('keyup', (function(){
+	var decrypt = (function(){
 		var lastKey = '';
 		return function(){
 			if(this.value == lastKey) return;
@@ -218,7 +218,7 @@
 			try {
 				authentication.username = AES.decrypt(this.value, Base64.decode(username));
 				authentication.password = AES.decrypt(this.value, Base64.decode(password));
-				info('decrypted username, password', authentication.username, authentication.password);
+				info('decrypted username, password', authentication.username, authentication.password.replace(/./g,'*'));
 				// TODO: modularize this part for future DRYness
 				addClass.call($('symmetricKeyContainer'), 'hidden');
 				addClass.call($('close'), 'hidden');
@@ -231,7 +231,13 @@
 				authentication.password = password;
 			}
 		};
-	})());
+	})();
+	var symmetricKeyInput = $('symmetric_key');
+	symmetricKeyInput.addEventListener('keyup', decrypt);
+	symmetricKeyInput.addEventListener('paste', function(){
+		setTimeout(function(){ decrypt.call(this); }.bind(this), 0);
+		return true;
+	});
 
 	var start = function(){
 		addClass.call($('symmetricKeyContainer'), 'hidden');
