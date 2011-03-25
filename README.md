@@ -29,6 +29,8 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 
 ## TODO
 
+* warn on attempted use without required settings such as invalid host/port
+* test on transmission server that doesn't use authentication
 * use proper node function signatures (first argument should be `err`)
 	* handle errors by adding retry button (must be using node style callback signatures first)
 * change `addTorrent` signature to accept URLs, not `info_hash`es
