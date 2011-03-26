@@ -1,3 +1,7 @@
+Transmission Torrent Downloader
+===============================
+
+
 ## Usage
 
 On any supported page (which currently includes the Torrentz individual torrent
@@ -5,7 +9,20 @@ pages and any page containing a magnet link), a [chrome page
 action](http://code.google.com/chrome/extensions/pageAction.html) will be made
 available to aid in the torrent starting process.
 
-This extension requires the Transmission HTTP RPC. This can be enabled [through
+![chrome page action](https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/pageAction.png)
+
+When clicked, a chrome "popup" will be displayed. The target server will be
+displayed at the top. Press the button to initiate the torrent-adding process.
+
+![initiate torrent download](https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/addTorrent.png)
+
+You will see a stream of status messages followed by either a green success
+message or a red error message. In the event that a green success message was
+output, the torrent should now be added to the transmission server.
+
+![successful output](https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/output.png)
+
+*Note:* This extension requires the Transmission HTTP RPC. This can be enabled [through
 the preferences
 GUI](http://www.transmissionbt.com/help/gtk/2.2x/html/preferences.html#web)
 when using transmission-gtk or by setting the `rpc-enabled` and related `rpc-*`
@@ -17,7 +34,12 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * Adds torrents to a transmission server (remote or local)
 * (optionally) Adds all trackers from tracker aggregation websites
 * Saves and optionally encrypts login information
+
+  ![encryption prompt](https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/encryption.png)
+
 * Adds additional, specified trackers to each torrent
+
+![options page](https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/options.png)
 
 
 ## Installation
