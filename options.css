@@ -7,6 +7,13 @@ body {
   display: none !important;
 }
 
+img#githubRibbon {
+	position: fixed;
+	top: 0;
+	right: 0;
+	border: 0;
+}
+
 img#logo {
 	float: left;
 	margin-right: 1.2em;
@@ -51,7 +58,7 @@ section > h3 {
 	padding-left: 1em;
 }
 
-acronym {
+abbr {
 	text-transform: uppercase;
 	border-bottom: dotted 1px #999;
 	cursor: help;

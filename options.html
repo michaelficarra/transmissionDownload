@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>Transmission Torrent Downloader Options</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" type="text/css" href="chrome.css" />
 	<link rel="stylesheet" type="text/css" href="options.css" />
@@ -9,6 +10,13 @@
 	<script type="text/javascript" src="util.js"></script>
 </head>
 <body class="container">
+
+
+	<map name="githubRibbonMap">
+		<area shape="poly" coords="8,0,150,142,150,84,66,0" href="http://github.com/michaelficarra/transmissionDownload" target="_blank" alt="Fork me on Github" />
+	</map>
+
+	<img id="githubRibbon" usemap="#githubRibbonMap" src="images/githubRibbon.png" alt="Fork me on GitHub" />
 
 	<img src="icons/transmission.48.png" id="logo" />
 	<h1 class="title">Transmission Torrent Downloader</h1>
@@ -61,7 +69,7 @@
 			</label>
 			<label>
 				<input type="checkbox" id="encryption_enabled" />
-				encrypt with <acronym title="Advanced Encryption Standard (Rijndael)">AES</acronym>
+				encrypt with <abbr title="Advanced Encryption Standard (Rijndael)">AES</abbr>
 			</label>
 			<label>
 				symmetric key:
