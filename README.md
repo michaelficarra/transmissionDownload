@@ -58,14 +58,14 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * change `addTorrent` signature to accept URLs, not `info_hash`es
 	* move looping/retrying behaviour from `addTorrent` to event handler
 	* add support for adding torrents by torrent download URL (for private torrents)
+	* add contextual menu for any link: "Send to Transmission ==(submenu)=> http://host:port/path"
 * don't make user type in password repeatedly (send request to background page to store password in closure for X seconds)
 * don't require save button on options page
 * find a way to test this thing
 * keyboard shortcut
 * standardize element id naming convention (underscore or camel case)
 * remove shared-scope `server`, `authentication`, and `transmissionSessionId`; pass them around instead (somehow)
-* find a way to make it continue even if popup is closed
-* add images to documentation
+* find a way to make it continue even if popup is closed (web worker? do the work in the background page?)
 * publicize
 * go to transmission web interface (on torrent add) if tab is already open (see [goToInbox function](http://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/extensions/docs/examples/extensions/gmail/background.html?content-type=text/plain))
 * modularize and DRY up everything
