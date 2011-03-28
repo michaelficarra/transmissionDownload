@@ -1,7 +1,7 @@
 { "name"           : "Transmission Torrent Downloader"
 , "homepage_url"   : "https://github.com/michaelficarra/transmissionDownload"
 , "update_url"     : "https://github.com/michaelficarra/transmissionDownload/updateInfo.xml"
-, "version"        : "0.0.1"
+, "version"        : "0.0.3"
 , "description"    : "Adds torrent to Transmission through RPC on supported websites"
 , "icons"          :
 	{ "16" : "icons/transmission.16.alt.png"
