@@ -226,7 +226,6 @@
 				removeClass.call($('addTorrent'), 'hidden');
 				$('addTorrent').focus();
 			} catch(e) {
-				error('caught error while decrypting username, password', e);
 				authentication.username = username;
 				authentication.password = password;
 			}
