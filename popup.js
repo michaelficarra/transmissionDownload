@@ -1,34 +1,5 @@
 (function(global, undefined){
 
-	var transmissionSessionId = null,
-		server =
-			{ protocol: getOption('ServerProtocol')
-			, host:     getOption('ServerHost')
-			, port:     getOption('ServerPort')
-			, path:     getOption('ServerPath')
-			},
-		authentication =
-			{ enabled:   getOption('AuthenticationEnabled')
-			, encrypted: getOption('AuthenticationEncrypted')
-			, username:  getOption('AuthenticationUsername')
-			, password:  getOption('AuthenticationPassword')
-			};
-
-	var log = function(type){
-			return function(msg){
-				(console[type] || console.log).apply(
-					console,
-					Array.prototype.slice.call(arguments));
-				var li = document.createElement('li');
-				li.innerText = msg;
-				li.className = type;
-				$('log').appendChild(li);
-			};
-		},
-		info = function(msg){ return log('info').apply(this, arguments); },
-		error = function(msg){ return log('error').apply(this, arguments); };
-
-
 	var getTrackers = function(info_hash, callback){
 		info_hash = info_hash.toLowerCase();
 		var trackers = [], running = 0,
@@ -92,40 +63,47 @@
 
 	var startSession = function(callback){
 		info('initiating transmission session');
-		if(transmissionSessionId) {
+		if(this.sessionId) {
 			if(typeof callback=='function')
-				callback(transmissionSessionId);
+				callback(this.sessionId);
 			return;
 		}
-		var xhr = new XMLHttpRequest;
+		var xhr = new XMLHttpRequest,
+			self = this,
+			auth = this.authentication,
+			server = this.server;
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState!=4) return
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
 			if(xhr.status!=409 && xhr.status!=200 || !sessionId)
 				return error('could not establish a secure session with the transmission server', xhr, sessionId);
-			transmissionSessionId = sessionId;
+			self.sessionId = sessionId;
 			info('secured transmission session', sessionId);
 			if(typeof callback=='function') callback(sessionId);
 		};
 		xhr.open('GET', buildUrl(server.protocol, server.host, server.port, server.path), true);
-		var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
-		if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
+		var basicAuth = 'Basic '+Base64.encode(auth.username+':'+auth.password);
+		if(auth.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 		xhr.send();
 	};
 
 	var addTorrent = function(info_hash, callback){
 		if(!info_hash) return error('addTorrent called without info_hash', info_hash);
-		if(!transmissionSessionId)
+		if(!this.sessionId)
 			return startSession(function(newSessionId){
 				if(!newSessionId) return;
 				addTorrent(info_hash, callback);
 			});
-		var sources =
-			[ { name: 'torrage.com',  url: 'http://torrage.com/torrent/#{info_hash}.torrent'  }
-			, { name: 'torcache.com', url: 'http://torcache.com/torrent/#{info_hash}.torrent' }
-			, { name: 'zoink.it',     url: 'http://zoink.it/torrent/#{info_hash}.torrent'     }
-			, { name: 'torrage.ws',   url: 'http://torrage.ws/torrent/#{info_hash}.torrent'   }
-			];
+		var self = this,
+			auth = this.authentication,
+			server = this.server,
+			sessionId = this.sessionId,
+			sources =
+				[ { name: 'torrage.com',  url: 'http://torrage.com/torrent/#{info_hash}.torrent'  }
+				, { name: 'torcache.com', url: 'http://torcache.com/torrent/#{info_hash}.torrent' }
+				, { name: 'zoink.it',     url: 'http://zoink.it/torrent/#{info_hash}.torrent'     }
+				, { name: 'torrage.ws',   url: 'http://torrage.ws/torrent/#{info_hash}.torrent'   }
+				];
 		var tryAgain;
 		(tryAgain = function(){
 			var source = sources.shift();
@@ -153,10 +131,10 @@
 					}
 				};
 			xhr.open('POST', buildUrl(server.protocol, server.host, server.port, server.path), true);
-			xhr.setRequestHeader('X-Transmission-Session-Id', transmissionSessionId);
+			xhr.setRequestHeader('X-Transmission-Session-Id', sessionId);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
-			if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
+			var basicAuth = 'Basic '+Base64.encode(auth.username+':'+auth.password);
+			if(auth.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
 		})();
 	};
@@ -164,7 +142,11 @@
 	var addTrackers = function(torrent, callback){
 		if(!torrent || !torrent.id || !torrent.hashString)
 			return error('attempted to add trackers to an invalid torrent', torrent);
-		var additionalTrackers = getOption('AdditionalTrackers');
+		var additionalTrackers = getOption('AdditionalTrackers'),
+			self = this,
+			server = this.server,
+			auth = this.authentication,
+			sessionId = this.sessionId;
 		var next = function(trackers){
 			if(additionalTrackers.length)
 				info('adding supplementary trackers', additionalTrackers);
@@ -184,10 +166,10 @@
 					}
 				};
 			xhr.open('POST', buildUrl(server.protocol, server.host, server.port, server.path), true);
-			xhr.setRequestHeader('X-Transmission-Session-Id', transmissionSessionId);
+			xhr.setRequestHeader('X-Transmission-Session-Id', sessionId);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			var basicAuth = 'Basic '+Base64.encode(authentication.username+':'+authentication.password);
-			if(authentication.enabled) xhr.setRequestHeader('Authorization', basicAuth);
+			var basicAuth = 'Basic '+Base64.encode(auth.username+':'+auth.password);
+			if(auth.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
 		}
 		if(getOption('AddTrackers')) {
@@ -207,18 +189,20 @@
 	});
 
 	var decrypt = (function(){
-		var lastKey = '';
+		var lastKey = '',
+			self = this,
+			auth = this.authentication;
 		return function(){
 			if(this.value == lastKey) return;
 			lastKey = this.value;
 
-			var username = getOption('AuthenticationUsername'),
-				password = getOption('AuthenticationPassword');
+			var username = auth.username,
+				password = auth.password;
 
 			try {
-				authentication.username = AES.decrypt(this.value, Base64.decode(username));
-				authentication.password = AES.decrypt(this.value, Base64.decode(password));
-				info('decrypted username, password', authentication.username, authentication.password.replace(/./g,'*'));
+				auth.username = AES.decrypt(this.value, Base64.decode(username));
+				auth.password = AES.decrypt(this.value, Base64.decode(password));
+				info('decrypted username and password', auth.username, auth.password.replace(/./g,'*'));
 				// TODO: modularize this part for future DRYness
 				addClass.call($('symmetricKeyContainer'), 'hidden');
 				addClass.call($('close'), 'hidden');
@@ -226,8 +210,8 @@
 				removeClass.call($('addTorrent'), 'hidden');
 				$('addTorrent').focus();
 			} catch(e) {
-				authentication.username = username;
-				authentication.password = password;
+				auth.username = username;
+				auth.password = password;
 			}
 		};
 	})();
@@ -239,22 +223,15 @@
 	});
 
 	var start = function(){
-		addClass.call($('symmetricKeyContainer'), 'hidden');
-		addClass.call($('addTorrent'), 'hidden');
-		$('log').innerHTML = '';
-		removeClass.call($('log'), 'hidden');
-
-		var username = getOption('AuthenticationUsername'),
-			password = getOption('AuthenticationPassword');
-
+		var context = generateOptions();
 		chrome.tabs.getSelected(null, function(tab) {
 			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
 				if(!info_hash) return error('could not determine info_hash', info_hash);
 				info('determined info_hash', info_hash);
 				var success = true;
-				addTorrent(info_hash, function(torrent){
+				addTorrent.call(contex, info_hash, function(torrent){
 					info('added torrent ' + JSON.stringify(torrent.name), torrent);
-					addTrackers(torrent, function(trackers){
+					addTrackers.call(context, torrent, function(trackers){
 						if(trackers)
 							info('added ' + trackers.length + ' additional trackers', trackers);
 						log('done')('done');
@@ -269,18 +246,40 @@
 	$('addTorrent').addEventListener('click', start);
 	$('retry').addEventListener('click', start);
 
-	var needsDecryption = getOption('AuthenticationEnabled') && getOption('AuthenticationEncrypted');
+	var generateOptions = function(){
+		return
+			{ authentication:
+				{ enabled   : getOption('AuthenticationEnabled')
+				, encrypted : getOption('AuthenticationEncrypted')
+				, username  : getOption('AuthenticationUsername')
+				, password  : getOption('AuthenticationPassword')
+				}
+			, server:
+				{ protocol : getOption('ServerProtocol')
+				, host     : getOption('ServerHost')
+				, port     : getOption('ServerPort')
+				, path     : getOption('ServerPath')
+				}
+			, sessionId: null
+			};
+	);
+
+	var options = generateOptions(),
+		auth = options.authentication,
+		server = options.server,
+		needsDecryption = auth.enabled && auth.encrypted;
 	(needsDecryption ? removeClass : addClass).call($('symmetricKeyContainer'), 'hidden');
 	if(needsDecryption) $('symmetric_key').focus();
 	(needsDecryption ? addClass : removeClass).call($('addTorrent'), 'hidden');
 	$('addTorrent').disabled = needsDecryption;
 	(needsDecryption ? removeClass : addClass).call($('close'), 'hidden');
 
-	$('rpc').innerText = buildUrl(
-		getOption('ServerProtocol'),
-		getOption('ServerHost'),
-		getOption('ServerPort'),
-		getOption('ServerPath'));
+	$('rpc').innerText = buildUrl(server.protocol, server.host, server.port, server.path);
+
+	addClass.call($('symmetricKeyContainer'), 'hidden');
+	addClass.call($('addTorrent'), 'hidden');
+	$('log').innerHTML = '';
+	removeClass.call($('log'), 'hidden');
 
 	/*
 		chrome.extension.sendRequest(request, function(response){
@@ -288,4 +287,4 @@
 		});
 	*/
 
-})(this)
+})(this);

@@ -26,3 +26,21 @@ removeClass = function(klass){
 var buildUrl = function(protocol, host, port, path){
 	return protocol + '://' + host + ':' + port + path.replace(/\/(\.?\/)+/g, '/');
 };
+
+var callCallback = function(callback){
+	if(typeof callback != 'function') return;
+	return callback.apply(null, Array.prototype.slice.call(arguments,1));
+}
+
+var log = function(type){
+		var consoleFn = console[type] || console.log;
+		return function(msg){
+			consoleFn.apply(console, Array.prototype.slice.call(arguments));
+			var li = document.createElement('li');
+			li.innerText = msg;
+			li.className = type;
+			$('log').appendChild(li);
+		};
+	},
+	info = log('info'),
+	error = log('error');

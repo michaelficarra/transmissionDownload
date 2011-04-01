@@ -64,7 +64,6 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * find a way to test this thing
 * keyboard shortcut
 * standardize element id naming convention (underscore or camel case)
-* remove shared-scope `server`, `authentication`, and `transmissionSessionId`; pass them around instead (somehow)
 * find a way to make it continue even if popup is closed (web worker? do the work in the background page?)
 * publicize
 * go to transmission web interface (on torrent add) if tab is already open (see [goToInbox function](http://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/extensions/docs/examples/extensions/gmail/background.html?content-type=text/plain))
