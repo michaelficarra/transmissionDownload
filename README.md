@@ -82,6 +82,7 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 0. Open `chrome://extensions` in chrome
 0. Enable developer mode
 0. Delete `transmissionDownload.crx` from repo directory
+0. Delete `images/screenshots`
 0. Bump version number in `updateInfo.xml`
 0. Bump version number in `manifest.json`
 0. Press "Load unpacked extension..." button
@@ -90,4 +91,6 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 0. Choose repo directory
 0. If making an official release, choose signature file as well
 0. Move generated `transmissionDownload.crx` file to repo directory
+0. Checkout `images/screenshots`
+0. Update README, screenshots
 0. Commit, tag, and push
