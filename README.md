@@ -70,6 +70,7 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 * modularize and DRY up everything
 	* function for trying an XHR with an array of inputs until we make a function pass
 	* function for sending an arguments object and a method to a transmission server
+* see if I can add a context menu item for the page action that opens the web interface
 * add support for multiple servers (don't forget to no longer cache the session ID as a single value!)
 * rewrite in CoffeeScript
 * think about allowing generic handler to find any 40-character hex string anywhere
