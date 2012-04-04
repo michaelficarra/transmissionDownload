@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>TransmissionDownload by michaelficarra</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/michaelficarra/transmissionDownload">Fork Me on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>TransmissionDownload</h1>
+            <h2>Chrome extension to aid in the addition of torrents to Transmission through the RPC</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/michaelficarra/transmissionDownload/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/michaelficarra/transmissionDownload/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+      <span class="banner-fix"></span>
+
+      <section id="main_content">
+        <h1>Transmission Torrent Downloader</h1>
+
+<h2>Usage</h2>
+
+<p>On any supported page (which currently includes the Torrentz individual torrent
+pages and any page containing a magnet link), a <a href="http://code.google.com/chrome/extensions/pageAction.html">chrome page
+action</a> will be made
+available to aid in the torrent starting process.</p>
+
+<p><img src="https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/pageAction.png" alt="chrome page action"></p>
+
+<p>When clicked, a chrome "popup" will be displayed. The target server will be
+displayed at the top. Press the button to initiate the torrent-adding process.</p>
+
+<p><img src="https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/addTorrent.png" alt="initiate torrent download"></p>
+
+<p>You will see a stream of status messages followed by either a green success
+message or a red error message. In the event that a green success message was
+output, the torrent should now be added to the transmission server.</p>
+
+<p><img src="https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/output.png" alt="successful output"></p>
+
+<p><em>Note:</em> This extension requires the Transmission HTTP RPC. This can be enabled <a href="http://www.transmissionbt.com/help/gtk/2.2x/html/preferences.html#web">through
+the preferences
+GUI</a>
+when using transmission-gtk or by setting the <code>rpc-enabled</code> and related <code>rpc-*</code>
+values in transmission-daemon's <code>settings.json</code> file when using transmission-daemon.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Adds torrents to a transmission server (remote or local)</li>
+<li>(optionally) Adds all trackers from tracker aggregation websites</li>
+<li>Saves and optionally encrypts login information</li>
+</ul><p><img src="https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/encryption.png" alt="encryption prompt"></p>
+
+<ul>
+<li>Adds additional, specified trackers to each torrent</li>
+</ul><p><img src="https://github.com/michaelficarra/transmissionDownload/raw/master/images/screenshots/options.png" alt="options page"></p>
+
+<h2>Installation</h2>
+
+<ol>
+<li>Download <a href="https://github.com/michaelficarra/transmissionDownload/raw/master/transmissionDownload.crx">the transmissionDownload.crx file</a>
+</li>
+<li>Open it with chrome</li>
+<li>Accept security warnings</li>
+</ol><h2>TODO</h2>
+
+<ul>
+<li>warn on attempted use without required settings such as invalid host/port</li>
+<li>test on transmission server that doesn't use authentication</li>
+<li>use proper node function signatures (first argument should be <code>err</code>)
+
+<ul>
+<li>handle errors by adding retry button (must be using node style callback signatures first)</li>
+</ul>
+</li>
+<li>change <code>addTorrent</code> signature to accept URLs, not <code>info_hash</code>es
+
+<ul>
+<li>move looping/retrying behaviour from <code>addTorrent</code> to event handler</li>
+<li>add support for adding torrents by torrent download URL (for private torrents)</li>
+<li>add contextual menu for any link: "Send to Transmission ==(submenu)=&gt; http://host:port/path"</li>
+</ul>
+</li>
+<li>don't make user type in password repeatedly (send request to background page to store password in closure for X seconds)</li>
+<li>don't require save button on options page</li>
+<li>find a way to test this thing</li>
+<li>leopard shortcut</li>
+<li>standardize element id naming convention (underscore or camel case)</li>
+<li>find a way to make it continue even if popup is closed (web worker? do the work in the background page?)</li>
+<li>publicize</li>
+<li>go to transmission web interface (on torrent add) if tab is already open (see <a href="http://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/extensions/docs/examples/extensions/gmail/background.html?content-type=text/plain">goToInbox function</a>)</li>
+<li>modularize and DRY up everything
+
+<ul>
+<li>function for trying an XHR with an array of inputs until we make a function pass</li>
+<li>function for sending an arguments object and a method to a transmission server</li>
+</ul>
+</li>
+<li>see if I can add a context menu item for the page action that opens the web interface</li>
+<li>add support for multiple servers (don't forget to no longer cache the session ID as a single value!)</li>
+<li>rewrite in CoffeeScript</li>
+<li>think about allowing generic handler to find any 40-character hex string anywhere</li>
+<li>insert icons next to search results for extra accessibility (optional, defaulting to disabled)</li>
+<li>(permanent) write handlers for some more torrent websites without magnet links or with better alternatives</li>
+</ul><h2>Building / Releasing</h2>
+
+<ol>
+<li>Open <code>chrome://extensions</code> in chrome</li>
+<li>Enable developer mode</li>
+<li>Delete <code>transmissionDownload.crx</code> from repo directory</li>
+<li>Delete <code>images/screenshots</code>
+</li>
+<li>Bump version number in <code>updateInfo.xml</code>
+</li>
+<li>Bump version number in <code>manifest.json</code>
+</li>
+<li>Press "Load unpacked extension..." button</li>
+<li>Choose repo directory</li>
+<li>Press "Pack extension..." button</li>
+<li>Choose repo directory</li>
+<li>If making an official release, choose signature file as well</li>
+<li>Move generated <code>transmissionDownload.crx</code> file to repo directory</li>
+<li>Checkout <code>images/screenshots</code>
+</li>
+<li>Update README, screenshots</li>
+<li>Commit, tag, and push</li>
+</ol>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/michaelficarra">michaelficarra</a> can be found on <a href="https://github.com/michaelficarra/transmissionDownload">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
