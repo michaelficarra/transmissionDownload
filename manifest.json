@@ -1,47 +1,54 @@
-{ "name"           : "Transmission Torrent Downloader"
-, "homepage_url"   : "https://github.com/michaelficarra/transmissionDownload"
-, "update_url"     : "https://github.com/michaelficarra/transmissionDownload/updateInfo.xml"
-, "version"        : "0.0.3"
-, "description"    : "Adds torrent to Transmission through RPC on supported websites"
-, "icons"          :
-	{ "16" : "icons/transmission.16.alt.png"
-	, "32" : "icons/transmission.32.png"
-	, "48" : "icons/transmission.48.png"
-	, "64" : "icons/transmission.64.png"
-	, "128": "icons/transmission.128.png"
-	, "256": "icons/transmission.256.png"
-	}
+{ "manifest_version": 2
+, "name": "Transmission Torrent Downloader"
+, "homepage_url": "https://github.com/michaelficarra/transmissionDownload"
+, "update_url": "https://github.com/michaelficarra/transmissionDownload/updateInfo.xml"
+, "version": "0.0.4"
+, "description": "Adds torrent to Transmission through RPC on supported websites"
+, "icons":
+  { "16" : "icons/transmission.16.alt.png"
+  , "32" : "icons/transmission.32.png"
+  , "48" : "icons/transmission.48.png"
+  , "64" : "icons/transmission.64.png"
+  , "128": "icons/transmission.128.png"
+  , "256": "icons/transmission.256.png"
+  }
 , "page_action":
-	{ "default_icon" : "icons/transmission.16.alt.png"
-	, "default_title": "Add this torrent to Transmission"
-	, "default_popup": "popup.html"
-	}
+  { "default_icon": "icons/transmission.16.alt.png"
+  , "default_title": "Add this torrent to Transmission"
+  , "default_popup": "popup.html"
+  }
 , "content_scripts":
-	[
-		{ "matches":
-			[ "*://*.torrentz.eu/*"
-			, "*://*.torrentz.com/*"
-			, "*://*.torrentz.me/*"
-			]
-		, "js"     : ["handlers/torrentz.js"]
-		}
-	,
-		{ "matches": [ "*://*/*" ]
-		, "js"     : ["handlers/generic.js"]
-		}
-	]
-, "permissions"    :
-	[ "tabs"
-	, "*://*.torrentz.eu/*"
-	, "*://*.torrentz.com/*"
-	, "*://*.torrentz.me/*"
-	, "*://*.bitsnoop.com/*"
-	, "*://*.torrage.com/*"
-	, "*://*.torrage.ws/*"
-	, "*://*.torcache.com/*"
-	, "*://*.zoink.it/*"
-	, "*://*/*"
-	]
-, "options_page"   : "options.html"
-, "background_page": "background.html"
+  [
+    { "matches":
+      [ "*://*.torrentz.eu/*"
+      , "*://*.torrentz.com/*"
+      , "*://*.torrentz.me/*"
+      ]
+    , "js": ["handlers/torrentz.js"]
+    }
+  ,
+    { "matches": [ "http://*/*", "https://*/*" ]
+    , "js": ["handlers/generic.js"]
+    }
+  ]
+, "permissions":
+  [ "tabs"
+  , "*://*.torrentz.eu/*"
+  , "*://*.torrentz.com/*"
+  , "*://*.torrentz.me/*"
+  , "*://*.bitsnoop.com/*"
+  , "*://*.torrage.com/*"
+  , "*://*.torrage.ws/*"
+  , "*://*.torcache.com/*"
+  , "*://*.zoink.it/*"
+  , "*://*/*"
+  ]
+, "options_page": "options.html"
+, "background":
+  { "scripts":
+    [ "Base64.js"
+    , "util.js"
+    , "background.js"
+    ]
+  }
 }

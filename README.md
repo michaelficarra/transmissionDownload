@@ -24,7 +24,7 @@ output, the torrent should now be added to the transmission server.
 
 *Note:* This extension requires the Transmission HTTP RPC. This can be enabled [through
 the preferences
-GUI](http://www.transmissionbt.com/help/gtk/2.2x/html/preferences.html#web)
+GUI](http://www.transmissionbt.com/help/gtk/2.3x/html/preferences.html#web)
 when using transmission-gtk or by setting the `rpc-enabled` and related `rpc-*`
 values in transmission-daemon's `settings.json` file when using transmission-daemon.
 
@@ -80,18 +80,6 @@ values in transmission-daemon's `settings.json` file when using transmission-dae
 
 ## Building / Releasing
 
-0. Open `chrome://extensions` in chrome
-0. Enable developer mode
-0. Delete `transmissionDownload.crx` from repo directory
-0. Delete `images/screenshots`
-0. Bump version number in `updateInfo.xml`
-0. Bump version number in `manifest.json`
-0. Press "Load unpacked extension..." button
-0. Choose repo directory
-0. Press "Pack extension..." button
-0. Choose repo directory
-0. If making an official release, choose signature file as well
-0. Move generated `transmissionDownload.crx` file to repo directory
-0. Checkout `images/screenshots`
+0. `make clean dist`
 0. Update README, screenshots
 0. Commit, tag, and push

@@ -75,8 +75,13 @@
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState!=4) return
 			var sessionId = xhr.getResponseHeader('X-Transmission-Session-Id');
-			if(xhr.status!=409 && xhr.status!=200 || !sessionId)
-				return error('could not establish a secure session with the transmission server', xhr, sessionId);
+			if(xhr.status!=409 && xhr.status!=200 || !sessionId) {
+				error('could not establish a secure session with the transmission server', xhr, sessionId);
+				addClass.call($('#addTorrent'), 'hidden');
+				removeClass.call($('#retry'), 'hidden');
+				$('#retry').focus();
+				return;
+			}
 			self.sessionId = sessionId;
 			info('secured transmission session', sessionId);
 			if(typeof callback=='function') callback(sessionId);
@@ -90,7 +95,7 @@
 	var addTorrent = function(info_hash, callback){
 		if(!info_hash) return error('addTorrent called without info_hash', info_hash);
 		if(!this.sessionId)
-			return startSession(function(newSessionId){
+			return startSession.call(this, function(newSessionId){
 				if(!newSessionId) return;
 				addTorrent(info_hash, callback);
 			});
@@ -114,7 +119,7 @@
 				if(xhr.readyState!=4) return;
 				// handle 409s (for CSRF token timeout) by asking for a new token
 				if(xhr.status==409)
-					return startSession(function(newSessionId){
+					return startSession.call(self, function(newSessionId){
 						if(!newSessionId) return;
 						addTorrent(info_hash, callback);
 					});
@@ -184,7 +189,7 @@
 	};
 
 
-	$('close').addEventListener('click', function(){
+	$('#close').addEventListener('click', function(){
 		window.close();
 	});
 
@@ -204,18 +209,18 @@
 				auth.password = AES.decrypt(this.value, Base64.decode(password));
 				info('decrypted username and password', auth.username, auth.password.replace(/./g,'*'));
 				// TODO: modularize this part for future DRYness
-				addClass.call($('symmetricKeyContainer'), 'hidden');
-				addClass.call($('close'), 'hidden');
-				$('addTorrent').disabled = false;
-				removeClass.call($('addTorrent'), 'hidden');
-				$('addTorrent').focus();
+				addClass.call($('#symmetricKeyContainer'), 'hidden');
+				addClass.call($('#close'), 'hidden');
+				$('#addTorrent').disabled = false;
+				removeClass.call($('#addTorrent'), 'hidden');
+				$('#addTorrent').focus();
 			} catch(e) {
 				auth.username = username;
 				auth.password = password;
 			}
 		};
 	})();
-	var symmetricKeyInput = $('symmetric_key');
+	var symmetricKeyInput = $('#symmetric_key');
 	symmetricKeyInput.addEventListener('keyup', decrypt);
 	symmetricKeyInput.addEventListener('paste', function(){
 		setTimeout(function(){ decrypt.call(this); }.bind(this), 0);
@@ -224,30 +229,33 @@
 
 	var start = function(){
 		var context = generateOptions();
+		$('#log').innerHTML = '';
+		removeClass.call($('#addTorrent'), 'hidden');
+		addClass.call($('#retry'), 'hidden');
 		chrome.tabs.getSelected(null, function(tab) {
 			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
 				if(!info_hash) return error('could not determine info_hash', info_hash);
 				info('determined info_hash', info_hash);
 				var success = true;
-				addTorrent.call(contex, info_hash, function(torrent){
+				addTorrent.call(context, info_hash, function(torrent){
 					info('added torrent ' + JSON.stringify(torrent.name), torrent);
 					addTrackers.call(context, torrent, function(trackers){
 						if(trackers)
 							info('added ' + trackers.length + ' additional trackers', trackers);
 						log('done')('done');
-						if(!success) removeClass.call($('retry'), 'hidden');
-						removeClass.call($('close'), 'hidden');
-						$(success ? 'close' : 'retry').focus();
+						if(!success) removeClass.call($('#retry'), 'hidden');
+						removeClass.call($('#close'), 'hidden');
+						$(success ? '#close' : '#retry').focus();
 					});
 				});
 			});
 		});
 	};
-	$('addTorrent').addEventListener('click', start);
-	$('retry').addEventListener('click', start);
+	$('#addTorrent').addEventListener('click', start);
+	$('#retry').addEventListener('click', start);
 
 	var generateOptions = function(){
-		return
+		return 0,
 			{ authentication:
 				{ enabled   : getOption('AuthenticationEnabled')
 				, encrypted : getOption('AuthenticationEncrypted')
@@ -262,24 +270,24 @@
 				}
 			, sessionId: null
 			};
-	);
+	};
 
 	var options = generateOptions(),
 		auth = options.authentication,
 		server = options.server,
 		needsDecryption = auth.enabled && auth.encrypted;
-	(needsDecryption ? removeClass : addClass).call($('symmetricKeyContainer'), 'hidden');
-	if(needsDecryption) $('symmetric_key').focus();
-	(needsDecryption ? addClass : removeClass).call($('addTorrent'), 'hidden');
-	$('addTorrent').disabled = needsDecryption;
-	(needsDecryption ? removeClass : addClass).call($('close'), 'hidden');
+	(needsDecryption ? removeClass : addClass).call($('#symmetricKeyContainer'), 'hidden');
+	if(needsDecryption) $('#symmetric_key').focus();
+	//(needsDecryption ? addClass : removeClass).call($('#addTorrent'), 'hidden');
+	$('#addTorrent').disabled = needsDecryption;
+	(needsDecryption ? removeClass : addClass).call($('#close'), 'hidden');
 
-	$('rpc').innerText = buildUrl(server.protocol, server.host, server.port, server.path);
+	$('#rpc').innerText = buildUrl(server.protocol, server.host, server.port, server.path);
 
-	addClass.call($('symmetricKeyContainer'), 'hidden');
-	addClass.call($('addTorrent'), 'hidden');
-	$('log').innerHTML = '';
-	removeClass.call($('log'), 'hidden');
+	//addClass.call($('#symmetricKeyContainer'), 'hidden');
+	//addClass.call($('#addTorrent'), 'hidden');
+	$('#log').innerHTML = '';
+	//removeClass.call($('#log'), 'hidden');
 
 	/*
 		chrome.extension.sendRequest(request, function(response){

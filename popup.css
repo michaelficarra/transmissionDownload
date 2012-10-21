@@ -26,4 +26,4 @@ input#symmetric_key {
 	color: #c94235;
 }
 
-button#addTorrent, button#close { width: 100%; }
+button { width: 100%; }

@@ -2,7 +2,7 @@
 
 	var getInfoHash = function(){
 		var path = location.pathname,
-			matches = /^\/(?:announce_)?([a-f0-9]{40})/i(path);
+			matches = path.match(/^\/(?:announce_)?([a-f0-9]{40})/i);
 		if(!matches || matches.length < 2) return;
 		return matches[1];
 	};

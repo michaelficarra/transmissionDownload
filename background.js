@@ -1,16 +1,4 @@
-(function(global, undefined){
-
-	localStorage.defaultServerProtocol          = JSON.stringify('http');
-	localStorage.defaultServerHost              = JSON.stringify('localhost');
-	localStorage.defaultServerPort              = JSON.stringify(9091);
-	localStorage.defaultServerPath              = JSON.stringify('/transmission/rpc');
-	localStorage.defaultAuthenticationEnabled   = JSON.stringify(false);
-	localStorage.defaultAuthenticationEncrypted = JSON.stringify(false);
-	localStorage.defaultAuthenticationUsername  = JSON.stringify('');
-	localStorage.defaultAuthenticationPassword  = JSON.stringify('');
-	localStorage.defaultStartAutomatically      = JSON.stringify(true);
-	localStorage.defaultAddTrackers             = JSON.stringify(true);
-	localStorage.defaultAdditionalTrackers      = JSON.stringify([]);
+(function(global){
 
 	var supportedUrls =
 		[ /^https?:\/\/([^\/]*\.)?torrentz\.(com|eu|me)\/(announce_)?[a-f0-9]{40}/i
@@ -19,7 +7,7 @@
 		];
 	var isSupportedUrl = function(url){
 		for(var i=0,l=supportedUrls.length; i<l; ++i) {
-			if(supportedUrls[i](url)) return true;
+			if(supportedUrls[i].test(url)) return true;
 		}
 		return false;
 	};
