@@ -84,7 +84,7 @@
 			}
 			self.sessionId = sessionId;
 			info('secured transmission session', sessionId);
-			if(typeof callback=='function') callback(sessionId);
+			if(typeof callback=='function') callback.call(self, sessionId);
 		};
 		xhr.open('GET', buildUrl(server.protocol, server.host, server.port, server.path), true);
 		var basicAuth = 'Basic '+Base64.encode(auth.username+':'+auth.password);
@@ -97,16 +97,16 @@
 		if(!this.sessionId)
 			return startSession.call(this, function(newSessionId){
 				if(!newSessionId) return;
-				addTorrent(info_hash, callback);
+				addTorrent.call(this, info_hash, callback);
 			});
 		var self = this,
 			auth = this.authentication,
 			server = this.server,
 			sessionId = this.sessionId,
 			sources =
-				[ { name: 'torrage.com',  url: 'http://torrage.com/torrent/#{info_hash}.torrent'  }
+				[ { name: 'zoink.it',     url: 'http://zoink.it/torrent/#{info_hash}.torrent'     }
 				, { name: 'torcache.com', url: 'http://torcache.com/torrent/#{info_hash}.torrent' }
-				, { name: 'zoink.it',     url: 'http://zoink.it/torrent/#{info_hash}.torrent'     }
+				, { name: 'torrage.com',  url: 'http://torrage.com/torrent/#{info_hash}.torrent'  }
 				, { name: 'torrage.ws',   url: 'http://torrage.ws/torrent/#{info_hash}.torrent'   }
 				];
 		var tryAgain;
@@ -121,11 +121,16 @@
 				if(xhr.status==409)
 					return startSession.call(self, function(newSessionId){
 						if(!newSessionId) return;
-						addTorrent(info_hash, callback);
+						addTorrent.call(this, info_hash, callback);
 					});
 				if(xhr.status!=200) return tryAgain();
 				var response = JSON.parse(xhr.responseText);
-				if(response.result != 'success') return error(response.result, response);
+				if(response.result != 'success') {
+					removeClass.call($('#retry'), 'hidden');
+					$('#retry').focus();
+					error(response.result, response);
+					return;
+				}
 				if(typeof callback=='function') callback(response.arguments['torrent-added']);
 			};
 			var postData =
@@ -141,7 +146,7 @@
 			var basicAuth = 'Basic '+Base64.encode(auth.username+':'+auth.password);
 			if(auth.enabled) xhr.setRequestHeader('Authorization', basicAuth);
 			xhr.send(JSON.stringify(postData));
-		})();
+		}).call(this);
 	};
 
 	var addTrackers = function(torrent, callback){
@@ -230,8 +235,7 @@
 	var start = function(){
 		var context = generateOptions();
 		$('#log').innerHTML = '';
-		removeClass.call($('#addTorrent'), 'hidden');
-		addClass.call($('#retry'), 'hidden');
+		addClass.call($('#addTorrent'), 'hidden');
 		chrome.tabs.getSelected(null, function(tab) {
 			chrome.tabs.sendRequest(tab.id, {type:'info_hash'}, function(info_hash){
 				if(!info_hash) return error('could not determine info_hash', info_hash);
@@ -243,6 +247,7 @@
 						if(trackers)
 							info('added ' + trackers.length + ' additional trackers', trackers);
 						log('done')('done');
+						addClass.call($('#addTorrent'), 'hidden');
 						if(!success) removeClass.call($('#retry'), 'hidden');
 						removeClass.call($('#close'), 'hidden');
 						$(success ? '#close' : '#retry').focus();
